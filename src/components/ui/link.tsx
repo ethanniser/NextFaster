@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type PrefetchImage = {
   srcset: string;
@@ -31,46 +31,16 @@ async function prefetchImages(href: string) {
 const seen = new Set<string>();
 
 export const Link: typeof NextLink = (({ children, ...props }) => {
-  const [images, setImages] = useState<PrefetchImage[]>([]);
   const [preloading, setPreloading] = useState<(() => void)[]>([]);
   const linkRef = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    if (props.prefetch === false) {
-      return;
-    }
-
-    const linkElement = linkRef.current;
-    if (!linkElement) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting) {
-          router.prefetch(String(props.href));
-          void prefetchImages(String(props.href)).then((images) => {
-            setImages(images);
-          }, console.error);
-          // Stop observing once images are prefetched
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: "0px", threshold: 0.1 }, // Trigger when at least 10% is visible
-    );
-
-    observer.observe(linkElement);
-
-    return () => {
-      observer.disconnect(); // Cleanup the observer when the component unmounts
-    };
-  }, [props.href, props.prefetch, router]);
 
   return (
     <NextLink
       ref={linkRef}
       prefetch={false}
-      onMouseEnter={() => {
+      onMouseEnter={async () => {
+        const images = await prefetchImages(String(props.href));
         router.prefetch(String(props.href));
         if (preloading.length) return;
         const p: (() => void)[] = [];
