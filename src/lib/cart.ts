@@ -41,6 +41,7 @@ export async function getCart() {
     return cartSchema.parse(JSON.parse(cart.value));
   } catch {
     console.error("Failed to parse cart cookie");
+    await updateCart([]);
     return [];
   }
 }
