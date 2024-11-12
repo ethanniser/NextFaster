@@ -47,7 +47,11 @@ function CartItem({ product }: { product: CartItem }) {
             <Image
               loading="eager"
               decoding="sync"
-              src={product.image_url ?? "/placeholder.svg"}
+              src={
+                product.image_url
+                  ? product.image_url + `?product=${product.slug}`
+                  : "/placeholder.svg"
+              }
               alt="Product"
               width={256}
               height={256}

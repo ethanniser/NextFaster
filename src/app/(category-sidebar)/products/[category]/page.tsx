@@ -51,7 +51,12 @@ export default async function Page(props: {
                       <Image
                         loading="eager"
                         decoding="sync"
-                        src={subcategory.image_url ?? "/placeholder.svg"}
+                        src={
+                          subcategory.image_url
+                            ? subcategory.image_url +
+                              `?subcategory=${subcategory.slug}`
+                            : "/placeholder.svg"
+                        }
                         alt={`A small picture of ${subcategory.name}`}
                         width={48}
                         height={48}

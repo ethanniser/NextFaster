@@ -81,7 +81,11 @@ export default async function Page(props: {
           <Image
             loading="eager"
             decoding="sync"
-            src={productData.image_url ?? "/placeholder.svg?height=64&width=64"}
+            src={
+              productData.image_url
+                ? productData.image_url + `?product=${productData.slug}`
+                : "/placeholder.svg?height=64&width=64"
+            }
             alt={`A small picture of ${productData.name}`}
             height={256}
             quality={80}

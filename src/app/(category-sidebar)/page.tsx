@@ -29,7 +29,11 @@ export default async function Home() {
                 <Image
                   loading={imageCount++ < 15 ? "eager" : "lazy"}
                   decoding="sync"
-                  src={category.image_url ?? "/placeholder.svg"}
+                  src={
+                    category.image_url
+                      ? category.image_url + `?category=${category.slug}`
+                      : "/placeholder.svg"
+                  }
                   alt={`A small picture of ${category.name}`}
                   className="mb-2 h-14 w-14 border hover:bg-accent2"
                   width={48}
