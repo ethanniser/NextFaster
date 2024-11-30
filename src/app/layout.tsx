@@ -33,7 +33,7 @@ export default async function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} flex flex-col overflow-y-auto overflow-x-hidden antialiased`}
       >
         <div>
-          <header className="fixed top-0 z-10 flex h-[70px] w-[100vw] flex-grow items-center justify-between gap-4 border-b-2 border-accent2 bg-background p-2 pb-[4px] pt-2 sm:flex-row sm:p-4 sm:pb-[4px] sm:pt-0">
+          <header className="fixed top-0 z-10 flex h-[90px] w-[100vw] flex-grow items-center justify-between border-b-2 border-accent2 bg-background p-2 pb-[4px] pt-2 sm:h-[70px] sm:flex-row sm:gap-4 sm:p-4 sm:pb-[4px] sm:pt-0">
             <div className="flex flex-grow flex-col">
               <div className="absolute right-2 top-2 flex justify-end pt-2 font-sans text-sm hover:underline sm:relative sm:right-0 sm:top-0">
                 <Suspense
@@ -49,7 +49,7 @@ export default async function RootLayout({
                   <AuthServer />
                 </Suspense>
               </div>
-              <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-auto sm:flex-row sm:items-center">
+              <div className="flex w-full flex-col items-start justify-center sm:w-auto sm:flex-row sm:items-center sm:gap-2">
                 <Link
                   prefetch={true}
                   href="/"
@@ -94,9 +94,9 @@ export default async function RootLayout({
               </div>
             </div>
           </header>
-          <div className="pt-[70px]">{children}</div>
+          <div className="pt-[85px] sm:pt-[70px]">{children}</div>
         </div>
-        <footer className="fixed bottom-0 flex h-[8px] w-screen flex-col items-center justify-between space-y-2 border-t border-gray-400 bg-background px-4 font-sans text-[11px] sm:h-6 sm:flex-row sm:space-y-0">
+        <footer className="fixed bottom-0 flex h-12 w-screen flex-col items-center justify-between space-y-2 border-t border-gray-400 bg-background px-4 font-sans text-[11px] sm:h-6 sm:flex-row sm:space-y-0">
           <div className="flex flex-wrap justify-center space-x-2 pt-2 sm:justify-start">
             <span className="hover:bg-accent2 hover:underline">Home</span>
             <span>|</span>
