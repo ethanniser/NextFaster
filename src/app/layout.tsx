@@ -32,9 +32,9 @@ export default async function RootLayout({
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} flex flex-col antialiased`}
       >
-        <div>
-          <header className="z-10 flex flex-grow items-center justify-between gap-4 border-b-2 border-accent2 bg-background p-2 pb-[4px] pt-2 sm:flex-row sm:p-4 sm:pb-[4px] sm:pt-0">
-            <div className="flex flex-grow flex-col">
+        <div className="relative">
+          <header className="absolute left-0 top-0 z-10 flex min-w-[100vw] flex-grow items-center justify-between gap-4 border-b-2 border-accent2 bg-background p-2 pb-[4px] pt-2 sm:flex-row sm:p-4 sm:pb-[4px] sm:pt-0">
+            <div className="flex min-w-full flex-grow flex-col">
               <div className="absolute right-2 top-2 flex justify-end pt-2 font-sans text-sm hover:underline sm:relative sm:right-0 sm:top-0">
                 <Suspense
                   fallback={

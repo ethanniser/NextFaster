@@ -9,7 +9,7 @@ export default async function Layout({
   const allCollections = await getCollections();
   return (
     <div className="flex flex-grow font-mono">
-      <aside className="hidden w-64 min-w-64 max-w-64 border-r p-4 md:block">
+      <aside className="sticky hidden w-64 min-w-64 max-w-64 border-r p-4 md:block">
         <h2 className="border-b border-accent1 text-sm font-semibold text-accent1">
           Choose a Category
         </h2>
@@ -27,10 +27,7 @@ export default async function Layout({
           ))}
         </ul>
       </aside>
-      <main
-        className="h-[calc(100vh-113px)] overflow-y-auto p-4 pt-0"
-        id="main-content"
-      >
+      <main className="h-full overflow-y-auto p-4 pt-0" id="main-content">
         {children}
       </main>
     </div>
