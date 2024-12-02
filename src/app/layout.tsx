@@ -29,6 +29,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js" async />
+        {/* rest of your scripts go under */}
+      </head>
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} flex flex-col overflow-y-auto overflow-x-hidden antialiased`}
       >
