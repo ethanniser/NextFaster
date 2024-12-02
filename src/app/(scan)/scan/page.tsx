@@ -1,14 +1,7 @@
 "use client";
 
-import { scan } from "react-scan"; // import this BEFORE react
 import React from "react";
 import Link from "next/link";
-
-if (typeof window !== "undefined") {
-  scan({
-    enabled: true,
-  });
-}
 
 export default function ScanPage() {
   return (
