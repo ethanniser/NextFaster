@@ -20,10 +20,7 @@ export const signUp = validatedAction(authSchema, async (data) => {
   const rl2 = await signUpRateLimit.limit(ip);
   if (!rl2.success) {
     return {
-      error: {
-        code: "AUTH_ERROR",
-        message: "Too many signups. Try again later",
-      },
+      error: "Too many signups. Try again later",
     };
   }
 
@@ -59,10 +56,7 @@ export const signIn = validatedAction(authSchema, async (data) => {
 
   if (!rl.success) {
     return {
-      error: {
-        code: "AUTH_ERROR",
-        message: "Too many attempts. Try again later",
-      },
+      error: "Too many attempts. Try again later",
     };
   }
   const user = await db
