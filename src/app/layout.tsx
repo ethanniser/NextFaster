@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import { WelcomeToast } from "./welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: {
@@ -125,6 +126,7 @@ export default async function RootLayout({
           <WelcomeToast />
         </Suspense>
         <Analytics scriptSrc="/insights/events.js" endpoint="/hfi/events" />
+        <SpeedInsights />
       </body>
     </html>
   );
