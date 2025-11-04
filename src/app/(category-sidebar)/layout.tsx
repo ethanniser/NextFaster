@@ -9,7 +9,7 @@ export default async function Layout({
   const allCollections = await getCollections();
   return (
     <div className="flex flex-grow font-mono">
-      <aside className="fixed left-0 hidden w-64 min-w-64 max-w-64 overflow-y-auto border-r p-4 md:block">
+      <aside className="fixed left-0 hidden w-64 min-w-64 max-w-64 overflow-y-auto border-r p-4 md:block md:h-full">
         <h2 className="border-b border-accent1 text-sm font-semibold text-accent1">
           Choose a Category
         </h2>
