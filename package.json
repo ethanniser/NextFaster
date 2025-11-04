@@ -17,6 +17,7 @@
     "@ai-sdk/openai": "^0.0.68",
     "@effect/platform": "^0.68.6",
     "@effect/platform-node": "^0.63.6",
+    "@neondatabase/serverless": "^0.10.4",
     "@next/env": "^14.2.15",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-label": "^2.1.0",
@@ -24,13 +25,13 @@
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.15.6",
     "@upstash/ratelimit": "^2.0.3",
     "@upstash/redis": "^1.34.3",
     "@vercel/analytics": "^1.3.1",
     "@vercel/blob": "^0.25.1",
     "@vercel/functions": "^1.4.2",
     "@vercel/kv": "^3.0.0",
-    "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.0.12",
     "ai": "^3.4.16",
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
@@ -45,6 +46,7 @@
     "lucide-react": "^0.453.0",
     "next": "15.0.4-canary.22",
     "openai": "^4.68.0",
+    "pg": "^8.16.3",
     "react": "19.0.0-rc-cd22717c-20241013",
     "react-dom": "19.0.0-rc-cd22717c-20241013",
     "react-scan": "^0.0.35",
@@ -55,17 +57,17 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.16.12",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "drizzle-kit": "^0.26.2",
-    "eslint": "^8",
+    "eslint": "^8.57.1",
     "eslint-config-next": "15.0.0-rc.1",
-    "postcss": "^8",
+    "postcss": "^8.4.47",
     "postcss-hover-media-feature": "^1.0.2",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
   },
   "pnpm": {
     "overrides": {
