@@ -22,8 +22,8 @@ importers:
         specifier: ^0.63.6
         version: 0.63.6(@effect/platform@0.68.6(@effect/schema@0.75.5(effect@3.9.2))(effect@3.9.2))(bufferutil@4.0.8)(effect@3.9.2)
       '@neondatabase/serverless':
-        specifier: ^0.10.4
-        version: 0.10.4
+        specifier: ^1.0.2
+        version: 1.0.2
       '@next/env':
         specifier: ^14.2.15
         version: 14.2.15
@@ -45,9 +45,6 @@ importers:
       '@types/bcryptjs':
         specifier: ^2.4.6
         version: 2.4.6
-      '@types/pg':
-        specifier: ^8.15.6
-        version: 8.15.6
       '@upstash/ratelimit':
         specifier: ^2.0.3
         version: 2.0.3
@@ -86,7 +83,7 @@ importers:
         version: 2.1.1
       drizzle-orm:
         specifier: ^0.35.1
-        version: 0.35.1(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(pg@8.16.3)(react@19.0.0-rc-cd22717c-20241013)(types-react@19.0.0-rc.1)
+        version: 0.35.1(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(pg@8.16.3)(react@19.0.0-rc-cd22717c-20241013)(types-react@19.0.0-rc.1)
       effect:
         specifier: ^3.9.2
         version: 3.9.2
@@ -108,9 +105,6 @@ importers:
       openai:
         specifier: ^4.68.0
         version: 4.68.0(zod@3.23.8)
-      pg:
-        specifier: ^8.16.3
-        version: 8.16.3
       react:
         specifier: 19.0.0-rc-cd22717c-20241013
         version: 19.0.0-rc-cd22717c-20241013
@@ -305,6 +299,7 @@ packages:
 
   '@effect/schema@0.75.5':
     resolution: {integrity: sha512-TQInulTVCuF+9EIbJpyLP6dvxbQJMphrnRqgexm/Ze39rSjfhJuufF7XvU3SxTgg3HnL7B/kpORTJbHhlE6thw==}
+    deprecated: this package has been merged into the main effect package
     peerDependencies:
       effect: ^3.9.2
 
@@ -775,11 +770,12 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@neondatabase/serverless@0.10.4':
-    resolution: {integrity: sha512-2nZuh3VUO9voBauuh+IGYRhGU/MskWHt1IuZvHcJw6GLjDgtqj/KViKo7SIrLdGLdot7vFbiRRw+BgEy3wT9HA==}
-
   '@neondatabase/serverless@0.9.5':
     resolution: {integrity: sha512-siFas6gItqv6wD/pZnvdu34wEqgG3nSE6zWZdq5j2DEsa+VvX8i/5HXJOo06qrw5axPXn+lGCxeR+NLaSPIXug==}
+
+  '@neondatabase/serverless@1.0.2':
+    resolution: {integrity: sha512-I5sbpSIAHiB+b6UttofhrN/UJXII+4tZPAq1qugzwCwLIL8EZLV7F/JyHUrEIiGgQpEXzpnjlJ+zwcEhheGvCw==}
+    engines: {node: '>=19.0.0'}
 
   '@next/env@14.2.15':
     resolution: {integrity: sha512-S1qaj25Wru2dUpcIZMjxeMVSwkt8BK4dmWHHiBuRstcIyOsMapqT4A4jSB6onvqeygkSSmOkyny9VVx8JIGamQ==}
@@ -1234,6 +1230,9 @@ packages:
 
   '@types/node@20.19.24':
     resolution: {integrity: sha512-FE5u0ezmi6y9OZEzlJfg37mqqf6ZDSF2V/NLjUyGrR9uTZ7Sb9F7bLNZ03S4XVUNRWGA7Ck4c1kK+YnuWjl+DA==}
+
+  '@types/node@22.19.0':
+    resolution: {integrity: sha512-xpr/lmLPQEj+TUnHmR+Ab91/glhJvsqcjB+yY0Ix9GO70H6Lb4FHH5GeqdOE5btAx7eIMwuHkp4H2MSkLcqWbA==}
 
   '@types/pg@8.11.6':
     resolution: {integrity: sha512-/2WmmBXHLsfRqzfHW7BNZ8SbYzE8OSk7i3WjFYvfgRHj7S1xj+16Je5fUKv3lVdVzk/zn9TXOqf+avFCFIE0yQ==}
@@ -3919,14 +3918,15 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@neondatabase/serverless@0.10.4':
-    dependencies:
-      '@types/pg': 8.11.6
-
   '@neondatabase/serverless@0.9.5':
     dependencies:
       '@types/pg': 8.11.6
     optional: true
+
+  '@neondatabase/serverless@1.0.2':
+    dependencies:
+      '@types/node': 22.19.0
+      '@types/pg': 8.15.6
 
   '@next/env@14.2.15': {}
 
@@ -4278,7 +4278,7 @@ snapshots:
 
   '@types/node-fetch@2.6.11':
     dependencies:
-      '@types/node': 20.16.12
+      '@types/node': 20.19.24
       form-data: 4.0.1
 
   '@types/node@18.19.56':
@@ -4293,15 +4293,20 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@22.19.0':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/pg@8.11.6':
     dependencies:
       '@types/node': 20.19.24
       pg-protocol: 1.10.3
       pg-types: 4.1.0
+    optional: true
 
   '@types/pg@8.15.6':
     dependencies:
-      '@types/node': 20.16.12
+      '@types/node': 20.19.24
       pg-protocol: 1.10.3
       pg-types: 2.2.0
 
@@ -4908,9 +4913,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.35.1(@neondatabase/serverless@0.10.4)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(pg@8.16.3)(react@19.0.0-rc-cd22717c-20241013)(types-react@19.0.0-rc.1):
+  drizzle-orm@0.35.1(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.10.0)(pg@8.16.3)(react@19.0.0-rc-cd22717c-20241013)(types-react@19.0.0-rc.1):
     optionalDependencies:
-      '@neondatabase/serverless': 0.10.4
+      '@neondatabase/serverless': 1.0.2
       '@opentelemetry/api': 1.9.0
       '@types/pg': 8.15.6
       '@types/react': types-react@19.0.0-rc.1
@@ -5888,7 +5893,8 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  obuf@1.1.2: {}
+  obuf@1.1.2:
+    optional: true
 
   once@1.4.0:
     dependencies:
@@ -5953,15 +5959,18 @@ snapshots:
   pg-cloudflare@1.2.7:
     optional: true
 
-  pg-connection-string@2.9.1: {}
+  pg-connection-string@2.9.1:
+    optional: true
 
   pg-int8@1.0.1: {}
 
-  pg-numeric@1.0.2: {}
+  pg-numeric@1.0.2:
+    optional: true
 
   pg-pool@3.10.1(pg@8.16.3):
     dependencies:
       pg: 8.16.3
+    optional: true
 
   pg-protocol@1.10.3: {}
 
@@ -5982,6 +5991,7 @@ snapshots:
       postgres-date: 2.1.0
       postgres-interval: 3.0.0
       postgres-range: 1.1.4
+    optional: true
 
   pg@8.16.3:
     dependencies:
@@ -5992,10 +6002,12 @@ snapshots:
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.2.7
+    optional: true
 
   pgpass@1.0.5:
     dependencies:
       split2: 4.2.0
+    optional: true
 
   picocolors@1.1.1: {}
 
@@ -6071,25 +6083,30 @@ snapshots:
 
   postgres-array@2.0.0: {}
 
-  postgres-array@3.0.4: {}
+  postgres-array@3.0.4:
+    optional: true
 
   postgres-bytea@1.0.0: {}
 
   postgres-bytea@3.0.0:
     dependencies:
       obuf: 1.1.2
+    optional: true
 
   postgres-date@1.0.7: {}
 
-  postgres-date@2.1.0: {}
+  postgres-date@2.1.0:
+    optional: true
 
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
 
-  postgres-interval@3.0.0: {}
+  postgres-interval@3.0.0:
+    optional: true
 
-  postgres-range@1.1.4: {}
+  postgres-range@1.1.4:
+    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -6313,7 +6330,8 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  split2@4.2.0: {}
+  split2@4.2.0:
+    optional: true
 
   sswr@2.1.0(svelte@4.2.19):
     dependencies:
