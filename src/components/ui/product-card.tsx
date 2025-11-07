@@ -2,39 +2,39 @@
 import { Link } from "@/components/ui/link";
 import NextImage from "next/image";
 import { getImageProps } from "next/image";
-import { Product } from "@/db/schema";
+import { Drop } from "@/db/schema";
 import { useEffect } from "react";
 
-export function getProductLinkImageProps(
+export function getDropLinkImageProps(
   imageUrl: string,
-  productName: string,
+  dropName: string,
 ) {
   return getImageProps({
     width: 48,
     height: 48,
     quality: 65,
     src: imageUrl,
-    alt: `A small picture of ${productName}`,
+    alt: `A small picture of ${dropName}`,
   });
 }
 
 export function ProductLink(props: {
   imageUrl?: string | null;
-  category_slug: string;
-  subcategory_slug: string;
+  ocean_slug: string;
+  river_slug: string;
   loading: "eager" | "lazy";
-  product: Product;
+  drop: Drop;
 }) {
-  const { category_slug, subcategory_slug, product, imageUrl } = props;
+  const { ocean_slug, river_slug, drop, imageUrl } = props;
 
-  // prefetch the main image for the product page, if this is too heavy
+  // prefetch the main image for the drop page, if this is too heavy
   // we could only prefetch the first few cards, then prefetch on hover
   const prefetchProps = getImageProps({
     height: 256,
     quality: 80,
     width: 256,
     src: imageUrl ?? "/placeholder.svg?height=64&width=64",
-    alt: `A small picture of ${product.name}`,
+    alt: `A small picture of ${drop.name}`,
   });
   useEffect(() => {
     try {
@@ -56,14 +56,14 @@ export function ProductLink(props: {
     <Link
       prefetch={true}
       className="group flex h-[130px] w-full flex-row border px-4 py-2 hover:bg-gray-100 sm:w-[250px]"
-      href={`/products/${category_slug}/${subcategory_slug}/${product.slug}`}
+      href={`/drops/${ocean_slug}/${river_slug}/${drop.slug}`}
     >
       <div className="py-2">
         <NextImage
           loading={props.loading}
           decoding="sync"
           src={imageUrl ?? "/placeholder.svg?height=48&width=48"}
-          alt={`A small picture of ${product.name}`}
+          alt={`A small picture of ${drop.name}`}
           width={48}
           height={48}
           quality={65}
@@ -73,9 +73,9 @@ export function ProductLink(props: {
       <div className="px-2" />
       <div className="h-26 flex flex-grow flex-col items-start py-2">
         <div className="text-sm font-medium text-gray-700 group-hover:underline">
-          {product.name}
+          {drop.name}
         </div>
-        <p className="overflow-hidden text-xs">{product.description}</p>
+        <p className="overflow-hidden text-xs">{drop.description}</p>
       </div>
     </Link>
   );

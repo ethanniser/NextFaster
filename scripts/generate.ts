@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import slugify from "slugify";
 import { db } from "../src/db";
 import {
-  categories,
-  collections,
-  subcategories,
-  subcollections,
+  oceans,
+  planets,
+  rivers,
+  seas,
 } from "../src/db/schema";
 import { eq, isNull } from "drizzle-orm";
 import { generateObject } from "ai";
@@ -17,207 +17,207 @@ const openai = new OpenAI();
 const client = createOpenAI();
 
 const system = `
-You are given the name of a collection for products in an art supply store.
-Your task is to generate 20 unique categories for this collection. Make sure the
-category names are broad.
+You are given the name of a planet for drops in an art supply store.
+Your task is to generate 20 unique oceans for this planet. Make sure the
+ocean names are broad.
 
 YOU MUST OUTPUT IN ONLY JSON.
 
 EXAMPLE:
 
 INPUT:
-Collection Name: Sketching Pencils
+Planet Name: Sketching Pencils
 
 OUTPUT:
-{ categories: ["Colored Pencils", "Charcoal Pencils", ...] }
+{ oceans: ["Colored Pencils", "Charcoal Pencils", ...] }
 
-Remember, ONLY RETURN THE JSON of 20 unique categories and nothing else.
-  
-MAKE SURE THERE ARE 20 CATEGORIES IN THE OUTPUT.`;
+Remember, ONLY RETURN THE JSON of 20 unique oceans and nothing else.
 
-const getCollections = async () => {
-  return await db.select().from(collections);
+MAKE SURE THERE ARE 20 OCEANS IN THE OUTPUT.`;
+
+const getPlanets = async () => {
+  return await db.select().from(planets);
 };
 
-// generate 20 categories per each collection
-const generateCategories = async () => {
+// generate 20 oceans per each planet
+const generateOceans = async () => {
   const data = [] as any;
-  const c = await getCollections();
+  const c = await getPlanets();
 
-  const promises = c.map(async (col) => {
+  const promises = c.map(async (planet) => {
     const { object } = await generateObject({
       model: client.languageModel("gpt-4o-mini", { structuredOutputs: true }),
       schema: z.object({
-        categories: z.array(z.string()),
+        oceans: z.array(z.string()),
       }),
       system,
-      prompt: `Collection Name: ${col.name}`,
+      prompt: `Planet Name: ${planet.name}`,
     });
 
-    const { categories: cats } = object;
-    console.log(`Categories generated: ${cats.length}`);
+    const { oceans: ocs } = object;
+    console.log(`Oceans generated: ${ocs.length}`);
 
-    const categoriesToAdd = cats.map((category: string) => ({
-      name: category,
-      collection_id: col.id,
-      slug: slugify(category, { lower: true }),
+    const oceansToAdd = ocs.map((ocean: string) => ({
+      name: ocean,
+      planet_id: planet.id,
+      slug: slugify(ocean, { lower: true }),
     }));
-    data.push(...categoriesToAdd);
+    data.push(...oceansToAdd);
   });
 
   await Promise.all(promises);
-  await db.insert(categories).values(data).onConflictDoNothing();
+  await db.insert(oceans).values(data).onConflictDoNothing();
 };
 
-// generateCategories();
+// generateOceans();
 
-const getCategories = async () => {
-  return await db.select().from(categories);
+const getOceans = async () => {
+  return await db.select().from(oceans);
 };
 
-// generate 10 subcollections per each category
-const generateSubCollections = async () => {
+// generate 10 seas per each ocean
+const generateSeas = async () => {
   const data = [] as any;
-  const c = await getCategories();
+  const c = await getOceans();
 
-  const promises = c.map(async (cat) => {
+  const promises = c.map(async (ocean) => {
     const { object } = await generateObject({
       model: client.languageModel("gpt-4o-mini", { structuredOutputs: true }),
       schema: z.object({
-        subcollections: z.array(z.string()),
+        seas: z.array(z.string()),
       }),
-      system: `You are given the name of a category for products in an art supply store.
-                Your task is to generate 10 unique subcollections for this category. Make sure the
-                subcollection names are broad.
+      system: `You are given the name of an ocean for drops in an art supply store.
+                Your task is to generate 10 unique seas for this ocean. Make sure the
+                sea names are broad.
 
                 YOU MUST OUTPUT IN ONLY JSON.
-                
+
                 EXAMPLE:
 
                 INPUT:
-                Category Name: Art Hitory
+                Ocean Name: Art Hitory
 
                 OUTPUT:
-                { subcollections: ["Art History Books", "Art History CDs", ...] }
-                
-                Remember, ONLY RETURN THE JSON of 10 unique subcollections and nothing else.
-                  
-                MAKE SURE THERE ARE 10 SUBCOLLECTIONS IN THE OUTPUT.`,
-      prompt: `Category Name: ${cat.name}`,
+                { seas: ["Art History Books", "Art History CDs", ...] }
+
+                Remember, ONLY RETURN THE JSON of 10 unique seas and nothing else.
+
+                MAKE SURE THERE ARE 10 SEAS IN THE OUTPUT.`,
+      prompt: `Ocean Name: ${ocean.name}`,
     });
 
-    const { subcollections: sc } = object;
-    console.log(`Subcollections generated: ${sc.length}`);
+    const { seas: ss } = object;
+    console.log(`Seas generated: ${ss.length}`);
 
-    const categoriesToAdd = sc.map((subcol: string) => ({
-      name: subcol,
-      category_slug: cat.slug,
+    const seasToAdd = ss.map((sea: string) => ({
+      name: sea,
+      ocean_slug: ocean.slug,
     }));
-    data.push(...categoriesToAdd);
+    data.push(...seasToAdd);
   });
 
   await Promise.all(promises);
-  await db.insert(subcollections).values(data).onConflictDoNothing();
+  await db.insert(seas).values(data).onConflictDoNothing();
 };
 
-// generateSubCollections();
+// generateSeas();
 
-const getSubcollections = async () => {
-  // only get subcollections that have no subcategories
+const getSeas = async () => {
+  // only get seas that have no rivers
   const result = await db
     .select()
-    .from(subcollections)
+    .from(seas)
     .leftJoin(
-      subcategories,
-      eq(subcollections.id, subcategories.subcollection_id),
+      rivers,
+      eq(seas.id, rivers.sea_id),
     )
-    .where(isNull(subcategories.subcollection_id))
+    .where(isNull(rivers.sea_id))
     .limit(300);
   console.log(result.length);
   return result;
 };
 
-const generateSubcategories = async () => {
+const generateRivers = async () => {
   const data = [] as any;
-  const subcollections = (await getSubcollections()).map(
-    (c) => c.subcollections,
+  const seasList = (await getSeas()).map(
+    (c) => c.seas,
   );
 
-  const promises = subcollections.map(async (subcol) => {
+  const promises = seasList.map(async (sea) => {
     const { object } = await generateObject({
       model: client.languageModel("gpt-4o-mini", { structuredOutputs: true }),
       schema: z.object({
-        subcategories: z.array(z.string()),
+        rivers: z.array(z.string()),
       }),
-      system: `You are given the name of a subcollection of products in an art supply store.
-                Your task is to generate 10 unique subcategories that belong to this subcollection.
-                Make sure the subcategory names are broad.
+      system: `You are given the name of a sea of drops in an art supply store.
+                Your task is to generate 10 unique rivers that belong to this sea.
+                Make sure the river names are broad.
 
                 YOU MUST OUTPUT IN ONLY JSON.
 
                 EXAMPLE:
 
                 INPUT:
-                Subcollection Name: Art Hitory
+                Sea Name: Art Hitory
 
                 OUTPUT:
-                { subcategories: ["Art History Books", "Art History CDs", ...] }
+                { rivers: ["Art History Books", "Art History CDs", ...] }
 
-                Remember, ONLY RETURN THE JSON of 10 unique subcategories and nothing else.
+                Remember, ONLY RETURN THE JSON of 10 unique rivers and nothing else.
 
-                MAKE SURE THERE ARE 10 SUBCATEGORIES IN THE OUTPUT.`,
-      prompt: `Subcollection Name: ${subcol}`,
+                MAKE SURE THERE ARE 10 RIVERS IN THE OUTPUT.`,
+      prompt: `Sea Name: ${sea}`,
     });
 
-    const { subcategories: sc } = object;
-    console.log(`Subcategories generated: ${sc.length}`);
+    const { rivers: rs } = object;
+    console.log(`Rivers generated: ${rs.length}`);
 
-    const subcategoriesToAdd = sc.map((subcat: string) => ({
-      name: subcat,
-      slug: slugify(subcat, { lower: true }),
-      subcollection_id: subcol.id,
+    const riversToAdd = rs.map((river: string) => ({
+      name: river,
+      slug: slugify(river, { lower: true }),
+      sea_id: sea.id,
     }));
-    data.push(...subcategoriesToAdd);
+    data.push(...riversToAdd);
   });
 
   await Promise.all(promises);
-  await db.insert(subcategories).values(data).onConflictDoNothing();
+  await db.insert(rivers).values(data).onConflictDoNothing();
 };
 
-// getSubcollections();
-// generateSubcategories();
+// getSeas();
+// generateRivers();
 
-const productSystemMessage = `
-You are given the name of a category of products in an art supply store.
-Your task is to generate 25 unique products that belong to this category.
-Ensure each product has a name and brief description.
+const dropSystemMessage = `
+You are given the name of a river of drops in an art supply store.
+Your task is to generate 25 unique drops that belong to this river.
+Ensure each drop has a name and brief description.
 
 YOU MUST OUTPUT IN ONLY JSON.
 
 EXAMPLE:
 
 INPUT:
-Category Name: Paint Markers
+River Name: Paint Markers
 
 OUTPUT:
-{ products: [{ name: "Expo Paint Marker", description: "..." }, { name: "Paint Marker Set", description:"..." }] }
+{ drops: [{ name: "Expo Paint Marker", description: "..." }, { name: "Paint Marker Set", description:"..." }] }
 
-Remember, ONLY RETURN THE JSON of 30 unique products and nothing else.
+Remember, ONLY RETURN THE JSON of 30 unique drops and nothing else.
 MAKE SURE YOUR JSON IS VALID. ALL JSON MUST BE CORRECT.
 `;
 
 const generateBatchFile = async () => {
-  const arr = await db.select().from(subcategories);
+  const arr = await db.select().from(rivers);
 
-  arr.forEach((subcat) => {
-    const custom_id = subcat.slug;
+  arr.forEach((river) => {
+    const custom_id = river.slug;
     const method = "POST";
     const url = "/v1/chat/completions";
     const body = {
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: productSystemMessage },
-        { role: "user", content: `Category name: ${subcat.name}` },
+        { role: "system", content: dropSystemMessage },
+        { role: "user", content: `River name: ${river.name}` },
       ],
     };
 

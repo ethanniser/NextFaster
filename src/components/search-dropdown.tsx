@@ -6,12 +6,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Product } from "../db/schema";
+import { Drop } from "../db/schema";
 import { Link } from "@/components/ui/link";
 import { useParams, useRouter } from "next/navigation";
-import { ProductSearchResult } from "@/app/api/search/route";
+import { DropSearchResult } from "@/app/api/search/route";
 
-type SearchResult = Product & { href: string };
+type SearchResult = Drop & { href: string };
 
 export function SearchDropdownComponent() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,17 +40,17 @@ export function SearchDropdownComponent() {
         }
         const json = await results.json();
         setIsLoading(false);
-        setFilteredItems(json as ProductSearchResult);
+        setFilteredItems(json as DropSearchResult);
       });
     }
   }, [searchTerm, inputRef]);
 
   const params = useParams();
   useEffect(() => {
-    if (!params.product) {
-      const subcategory = params.subcategory;
+    if (!params.drop) {
+      const river = params.river;
       setSearchTerm(
-        typeof subcategory === "string" ? subcategory.replaceAll("-", " ") : "",
+        typeof river === "string" ? river.replaceAll("-", " ") : "",
       );
     }
   }, [params]);

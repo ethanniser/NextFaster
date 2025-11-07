@@ -1,48 +1,48 @@
 import { Link } from "@/components/ui/link";
 import { db } from "@/db";
-import { collections } from "@/db/schema";
-import { getCollectionDetails } from "@/lib/queries";
+import { planets } from "@/db/schema";
+import { getPlanetDetails } from "@/lib/queries";
 
 import Image from "next/image";
 
 export async function generateStaticParams() {
-  return await db.select({ collection: collections.slug }).from(collections);
+  return await db.select({ planet: planets.slug }).from(planets);
 }
 
 export default async function Home(props: {
   params: Promise<{
-    collection: string;
+    planet: string;
   }>;
 }) {
-  const collectionName = decodeURIComponent((await props.params).collection);
+  const planetName = decodeURIComponent((await props.params).planet);
 
-  const collections = await getCollectionDetails(collectionName);
+  const planets = await getPlanetDetails(planetName);
   let imageCount = 0;
 
   return (
     <div className="w-full p-4">
-      {collections.map((collection) => (
-        <div key={collection.name}>
-          <h2 className="text-xl font-semibold">{collection.name}</h2>
+      {planets.map((planet) => (
+        <div key={planet.name}>
+          <h2 className="text-xl font-semibold">{planet.name}</h2>
           <div className="flex flex-row flex-wrap justify-center gap-2 border-b-2 py-4 sm:justify-start">
-            {collection.categories.map((category) => (
+            {planet.oceans.map((ocean) => (
               <Link
                 prefetch={true}
-                key={category.name}
+                key={ocean.name}
                 className="flex w-[125px] flex-col items-center text-center"
-                href={`/products/${category.slug}`}
+                href={`/drops/${ocean.slug}`}
               >
                 <Image
                   loading={imageCount++ < 15 ? "eager" : "lazy"}
                   decoding="sync"
-                  src={category.image_url ?? "/placeholder.svg"}
-                  alt={`A small picture of ${category.name}`}
+                  src={ocean.image_url ?? "/placeholder.svg"}
+                  alt={`A small picture of ${ocean.name}`}
                   className="mb-2 h-14 w-14 border hover:bg-accent2"
                   width={48}
                   height={48}
                   quality={65}
                 />
-                <span className="text-xs">{category.name}</span>
+                <span className="text-xs">{ocean.name}</span>
               </Link>
             ))}
           </div>

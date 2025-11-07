@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const cartSchema = z.array(
   z.object({
-    productSlug: z.string(),
+    dropSlug: z.string(),
     quantity: z.number(),
   }),
 );
@@ -36,25 +36,25 @@ export async function getCart() {
 export async function detailedCart() {
   const cart = await getCart();
 
-  const products = await db.query.products.findMany({
-    where: (products, { inArray }) =>
+  const drops = await db.query.drops.findMany({
+    where: (drops, { inArray }) =>
       inArray(
-        products.slug,
-        cart.map((item) => item.productSlug),
+        drops.slug,
+        cart.map((item) => item.dropSlug),
       ),
     with: {
-      subcategory: {
+      river: {
         with: {
-          subcollection: true,
+          sea: true,
         },
       },
     },
   });
 
-  const withQuantity = products.map((product) => ({
-    ...product,
+  const withQuantity = drops.map((drop) => ({
+    ...drop,
     quantity:
-      cart.find((item) => item.productSlug === product.slug)?.quantity ?? 0,
+      cart.find((item) => item.dropSlug === drop.slug)?.quantity ?? 0,
   }));
   return withQuantity;
 }

@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
-import { getProductDetails } from "@/lib/queries";
+import { getOcean } from "@/lib/queries";
 
 // Route segment config
 export const runtime = "edge";
 
 // Image metadata
-export const alt = "About the product";
+export const alt = "About the ocean";
 export const size = {
   width: 1200,
   height: 630,
@@ -17,19 +17,26 @@ export const contentType = "image/png";
 // Image generation
 export default async function Image(props: {
   params: Promise<{
-    product: string;
-    subcategory: string;
-    category: string;
+    ocean: string;
   }>;
 }) {
-  console.log(props);
-  const { product } = await props.params;
-  const urlDecodedProduct = decodeURIComponent(product);
-  const productData = await getProductDetails(urlDecodedProduct);
+  const { ocean: oceanParam } = await props.params;
+  const urlDecodedOcean = decodeURIComponent(oceanParam);
 
-  if (!productData) {
-    notFound();
+  const ocean = await getOcean(urlDecodedOcean);
+
+  if (!ocean) {
+    return notFound();
   }
+
+  const examples = ocean.seas
+    .slice(0, 2)
+    .map((s) => s.name)
+    .join(", ");
+
+  const description = `Choose from our selection of ${ocean.name}, including ${examples + (ocean.seas.length > 1 ? "," : "")} and more. In stock and ready to ship.`;
+
+  // TODO: Change design to add river images that blur out
   return new ImageResponse(
     (
       <div
@@ -66,8 +73,8 @@ export default async function Image(props: {
                 width: "300px",
                 marginBottom: "30px",
               }}
-              src={productData.image_url ?? "/placeholder.svg"}
-              alt={productData.name}
+              src={ocean.image_url ?? "/placeholder.svg"}
+              alt={ocean.name}
             />
           </div>
         </div>
@@ -79,7 +86,7 @@ export default async function Image(props: {
             marginBottom: "20px",
           }}
         >
-          {productData.name}
+          {ocean.name}
         </h1>
         <div
           style={{
@@ -91,18 +98,8 @@ export default async function Image(props: {
           <div
             style={{ textAlign: "center", display: "flex", fontSize: "24px" }}
           >
-            {productData.description}
+            {description}
           </div>
-        </div>
-        <div
-          style={{
-            textAlign: "center",
-            display: "flex",
-            fontSize: "24px",
-            marginTop: "10px",
-          }}
-        >
-          ${productData.price}
         </div>
       </div>
     ),

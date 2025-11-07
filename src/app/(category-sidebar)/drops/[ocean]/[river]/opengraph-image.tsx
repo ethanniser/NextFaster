@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
-import { getSubcategory } from "@/lib/queries";
+import { getRiver } from "@/lib/queries";
 
 // Route segment config
 export const runtime = "edge";
 
 // Image metadata
-export const alt = "About the subcategory";
+export const alt = "About the river";
 export const size = {
   width: 1200,
   height: 630,
@@ -17,22 +17,22 @@ export const contentType = "image/png";
 // Image generation
 export default async function Image(props: {
   params: Promise<{
-    category: string;
-    subcategory: string;
+    ocean: string;
+    river: string;
   }>;
 }) {
-  const { subcategory: subcategoryParam } = await props.params;
-  const urlDecodedCategory = decodeURIComponent(subcategoryParam);
+  const { river: riverParam } = await props.params;
+  const urlDecodedRiver = decodeURIComponent(riverParam);
 
-  const subcategory = await getSubcategory(urlDecodedCategory);
+  const river = await getRiver(urlDecodedRiver);
 
-  if (!subcategory) {
+  if (!river) {
     return notFound();
   }
 
-  const description = `Choose from our selection of ${subcategory.name}. In stock and ready to ship.`;
+  const description = `Choose from our selection of ${river.name}. In stock and ready to ship.`;
 
-  // TODO: Change design to add subcategory images that blur out
+  // TODO: Change design to add drop images that blur out
   return new ImageResponse(
     (
       <div
@@ -69,8 +69,8 @@ export default async function Image(props: {
                 width: "300px",
                 marginBottom: "30px",
               }}
-              src={subcategory.image_url ?? "/placeholder.svg"}
-              alt={subcategory.name}
+              src={river.image_url ?? "/placeholder.svg"}
+              alt={river.name}
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ export default async function Image(props: {
             marginBottom: "20px",
           }}
         >
-          {subcategory.name}
+          {river.name}
         </h1>
         <div
           style={{

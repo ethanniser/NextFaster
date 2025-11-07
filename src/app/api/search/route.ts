@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
 
   const results = await getSearchResults(searchTerm);
 
-  const searchResults: ProductSearchResult = results.map((item) => {
-    const href = `/products/${item.categories.slug}/${item.subcategories.slug}/${item.products.slug}`;
+  const searchResults: DropSearchResult = results.map((item) => {
+    const href = `/drops/${item.oceans.slug}/${item.rivers.slug}/${item.drops.slug}`;
     return {
-      ...item.products,
+      ...item.drops,
       href,
     };
   });
@@ -23,12 +23,12 @@ export async function GET(request: NextRequest) {
   return response;
 }
 
-export type ProductSearchResult = {
+export type DropSearchResult = {
   href: string;
   name: string;
   slug: string;
   image_url: string | null;
   description: string;
   price: string;
-  subcategory_slug: string;
+  river_slug: string;
 }[];

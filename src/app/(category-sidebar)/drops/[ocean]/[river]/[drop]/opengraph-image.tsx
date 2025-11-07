@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
-import { getCategory } from "@/lib/queries";
+import { getDropDetails } from "@/lib/queries";
 
 // Route segment config
 export const runtime = "edge";
 
 // Image metadata
-export const alt = "About the category";
+export const alt = "About the drop";
 export const size = {
   width: 1200,
   height: 630,
@@ -17,26 +17,19 @@ export const contentType = "image/png";
 // Image generation
 export default async function Image(props: {
   params: Promise<{
-    category: string;
+    drop: string;
+    river: string;
+    ocean: string;
   }>;
 }) {
-  const { category: categoryParam } = await props.params;
-  const urlDecodedCategory = decodeURIComponent(categoryParam);
+  console.log(props);
+  const { drop } = await props.params;
+  const urlDecodedDrop = decodeURIComponent(drop);
+  const dropData = await getDropDetails(urlDecodedDrop);
 
-  const category = await getCategory(urlDecodedCategory);
-
-  if (!category) {
-    return notFound();
+  if (!dropData) {
+    notFound();
   }
-
-  const examples = category.subcollections
-    .slice(0, 2)
-    .map((s) => s.name)
-    .join(", ");
-
-  const description = `Choose from our selection of ${category.name}, including ${examples + (category.subcollections.length > 1 ? "," : "")} and more. In stock and ready to ship.`;
-
-  // TODO: Change design to add subcategory images that blur out
   return new ImageResponse(
     (
       <div
@@ -73,8 +66,8 @@ export default async function Image(props: {
                 width: "300px",
                 marginBottom: "30px",
               }}
-              src={category.image_url ?? "/placeholder.svg"}
-              alt={category.name}
+              src={dropData.image_url ?? "/placeholder.svg"}
+              alt={dropData.name}
             />
           </div>
         </div>
@@ -86,7 +79,7 @@ export default async function Image(props: {
             marginBottom: "20px",
           }}
         >
-          {category.name}
+          {dropData.name}
         </h1>
         <div
           style={{
@@ -98,8 +91,18 @@ export default async function Image(props: {
           <div
             style={{ textAlign: "center", display: "flex", fontSize: "24px" }}
           >
-            {description}
+            {dropData.description}
           </div>
+        </div>
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            fontSize: "24px",
+            marginTop: "10px",
+          }}
+        >
+          ${dropData.price}
         </div>
       </div>
     ),

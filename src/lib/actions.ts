@@ -4,17 +4,17 @@ import { getCart, updateCart } from "./cart";
 
 export async function addToCart(prevState: unknown, formData: FormData) {
   const prevCart = await getCart();
-  const productSlug = formData.get("productSlug");
-  if (typeof productSlug !== "string") {
+  const dropSlug = formData.get("dropSlug");
+  if (typeof dropSlug !== "string") {
     return;
   }
   const itemAlreadyExists = prevCart.find(
-    (item) => item.productSlug === productSlug,
+    (item) => item.dropSlug === dropSlug,
   );
   if (itemAlreadyExists) {
     const newQuantity = itemAlreadyExists.quantity + 1;
     const newCart = prevCart.map((item) => {
-      if (item.productSlug === productSlug) {
+      if (item.dropSlug === dropSlug) {
         return {
           ...item,
           quantity: newQuantity,
@@ -27,7 +27,7 @@ export async function addToCart(prevState: unknown, formData: FormData) {
     const newCart = [
       ...prevCart,
       {
-        productSlug,
+        dropSlug,
         quantity: 1,
       },
     ];
@@ -39,16 +39,16 @@ export async function addToCart(prevState: unknown, formData: FormData) {
 
 export async function removeFromCart(formData: FormData) {
   const prevCart = await getCart();
-  const productSlug = formData.get("productSlug");
-  if (typeof productSlug !== "string") {
+  const dropSlug = formData.get("dropSlug");
+  if (typeof dropSlug !== "string") {
     return;
   }
   const itemAlreadyExists = prevCart.find(
-    (item) => item.productSlug === productSlug,
+    (item) => item.dropSlug === dropSlug,
   );
   if (!itemAlreadyExists) {
     return;
   }
-  const newCart = prevCart.filter((item) => item.productSlug !== productSlug);
+  const newCart = prevCart.filter((item) => item.dropSlug !== dropSlug);
   await updateCart(newCart);
 }

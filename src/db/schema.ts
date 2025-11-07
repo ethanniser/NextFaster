@@ -11,80 +11,80 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const collections = pgTable("collections", {
+export const planets = pgTable("planets", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").notNull(),
 });
 
-export type Collection = typeof collections.$inferSelect;
+export type Planet = typeof planets.$inferSelect;
 
-export const categories = pgTable(
-  "categories",
+export const oceans = pgTable(
+  "oceans",
   {
     slug: text("slug").notNull().primaryKey(),
     name: text("name").notNull(),
-    collection_id: integer("collection_id")
+    planet_id: integer("planet_id")
       .notNull()
-      .references(() => collections.id, { onDelete: "cascade" }),
+      .references(() => planets.id, { onDelete: "cascade" }),
     image_url: text("image_url"),
   },
   (table) => ({
-    collectionIdIdx: index("categories_collection_id_idx").on(
-      table.collection_id,
+    planetIdIdx: index("oceans_planet_id_idx").on(
+      table.planet_id,
     ),
   }),
 );
 
-export type Category = typeof categories.$inferSelect;
+export type Ocean = typeof oceans.$inferSelect;
 
-export const subcollections = pgTable(
-  "subcollections",
+export const seas = pgTable(
+  "seas",
   {
     id: serial("id").primaryKey(),
     name: text("name").notNull(),
-    category_slug: text("category_slug")
+    ocean_slug: text("ocean_slug")
       .notNull()
-      .references(() => categories.slug, { onDelete: "cascade" }),
+      .references(() => oceans.slug, { onDelete: "cascade" }),
   },
   (table) => ({
-    categorySlugIdx: index("subcollections_category_slug_idx").on(
-      table.category_slug,
+    oceanSlugIdx: index("seas_ocean_slug_idx").on(
+      table.ocean_slug,
     ),
   }),
 );
 
-export type Subcollection = typeof subcollections.$inferSelect;
+export type Sea = typeof seas.$inferSelect;
 
-export const subcategories = pgTable(
-  "subcategories",
+export const rivers = pgTable(
+  "rivers",
   {
     slug: text("slug").notNull().primaryKey(),
     name: text("name").notNull(),
-    subcollection_id: integer("subcollection_id")
+    sea_id: integer("sea_id")
       .notNull()
-      .references(() => subcollections.id, { onDelete: "cascade" }),
+      .references(() => seas.id, { onDelete: "cascade" }),
     image_url: text("image_url"),
   },
   (table) => ({
-    subcollectionIdIdx: index("subcategories_subcollection_id_idx").on(
-      table.subcollection_id,
+    seaIdIdx: index("rivers_sea_id_idx").on(
+      table.sea_id,
     ),
   }),
 );
 
-export type Subcategory = typeof subcategories.$inferSelect;
+export type River = typeof rivers.$inferSelect;
 
-export const products = pgTable(
-  "products",
+export const drops = pgTable(
+  "drops",
   {
     slug: text("slug").notNull().primaryKey(),
     name: text("name").notNull(),
     description: text("description").notNull(),
     price: numeric("price").notNull(),
-    subcategory_slug: text("subcategory_slug")
+    river_slug: text("river_slug")
       .notNull()
-      .references(() => subcategories.slug, { onDelete: "cascade" }),
+      .references(() => rivers.slug, { onDelete: "cascade" }),
     image_url: text("image_url"),
   },
   (table) => ({
@@ -95,52 +95,52 @@ export const products = pgTable(
     nameTrgmIndex: index("name_trgm_index")
       .using("gin", sql`${table.name} gin_trgm_ops`)
       .concurrently(),
-    subcategorySlugIdx: index("products_subcategory_slug_idx").on(
-      table.subcategory_slug,
+    riverSlugIdx: index("drops_river_slug_idx").on(
+      table.river_slug,
     ),
   }),
 );
 
-export type Product = typeof products.$inferSelect;
+export type Drop = typeof drops.$inferSelect;
 
-export const collectionsRelations = relations(collections, ({ many }) => ({
-  categories: many(categories),
+export const planetsRelations = relations(planets, ({ many }) => ({
+  oceans: many(oceans),
 }));
 
-export const categoriesRelations = relations(categories, ({ one, many }) => ({
-  collection: one(collections, {
-    fields: [categories.collection_id],
-    references: [collections.id],
+export const oceansRelations = relations(oceans, ({ one, many }) => ({
+  planet: one(planets, {
+    fields: [oceans.planet_id],
+    references: [planets.id],
   }),
-  subcollections: many(subcollections),
+  seas: many(seas),
 }));
 
-export const subcollectionRelations = relations(
-  subcollections,
+export const seasRelations = relations(
+  seas,
   ({ one, many }) => ({
-    category: one(categories, {
-      fields: [subcollections.category_slug],
-      references: [categories.slug],
+    ocean: one(oceans, {
+      fields: [seas.ocean_slug],
+      references: [oceans.slug],
     }),
-    subcategories: many(subcategories),
+    rivers: many(rivers),
   }),
 );
 
-export const subcategoriesRelations = relations(
-  subcategories,
+export const riversRelations = relations(
+  rivers,
   ({ one, many }) => ({
-    subcollection: one(subcollections, {
-      fields: [subcategories.subcollection_id],
-      references: [subcollections.id],
+    sea: one(seas, {
+      fields: [rivers.sea_id],
+      references: [seas.id],
     }),
-    products: many(products),
+    drops: many(drops),
   }),
 );
 
-export const productsRelations = relations(products, ({ one }) => ({
-  subcategory: one(subcategories, {
-    fields: [products.subcategory_slug],
-    references: [subcategories.slug],
+export const dropsRelations = relations(drops, ({ one }) => ({
+  river: one(rivers, {
+    fields: [drops.river_slug],
+    references: [rivers.slug],
   }),
 }));
 

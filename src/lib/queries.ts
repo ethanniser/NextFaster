@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { verifyToken } from "./session";
 import {
-  categories,
-  products,
-  subcategories,
-  subcollections,
+  oceans,
+  drops,
+  rivers,
+  seas,
   users,
 } from "@/db/schema";
 import { db } from "@/db";
@@ -44,125 +44,125 @@ export async function getUser() {
   return user[0];
 }
 
-export const getProductsForSubcategory = unstable_cache(
-  (subcategorySlug: string) =>
-    db.query.products.findMany({
-      where: (products, { eq, and }) =>
-        and(eq(products.subcategory_slug, subcategorySlug)),
-      orderBy: (products, { asc }) => asc(products.slug),
+export const getDropsForRiver = unstable_cache(
+  (riverSlug: string) =>
+    db.query.drops.findMany({
+      where: (drops, { eq, and }) =>
+        and(eq(drops.river_slug, riverSlug)),
+      orderBy: (drops, { asc }) => asc(drops.slug),
     }),
-  ["subcategory-products"],
+  ["river-drops"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getCollections = unstable_cache(
+export const getPlanets = unstable_cache(
   () =>
-    db.query.collections.findMany({
+    db.query.planets.findMany({
       with: {
-        categories: true,
+        oceans: true,
       },
-      orderBy: (collections, { asc }) => asc(collections.name),
+      orderBy: (planets, { asc }) => asc(planets.name),
     }),
-  ["collections"],
+  ["planets"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getProductDetails = unstable_cache(
-  (productSlug: string) =>
-    db.query.products.findFirst({
-      where: (products, { eq }) => eq(products.slug, productSlug),
+export const getDropDetails = unstable_cache(
+  (dropSlug: string) =>
+    db.query.drops.findFirst({
+      where: (drops, { eq }) => eq(drops.slug, dropSlug),
     }),
-  ["product"],
+  ["drop"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getSubcategory = unstable_cache(
-  (subcategorySlug: string) =>
-    db.query.subcategories.findFirst({
-      where: (subcategories, { eq }) => eq(subcategories.slug, subcategorySlug),
+export const getRiver = unstable_cache(
+  (riverSlug: string) =>
+    db.query.rivers.findFirst({
+      where: (rivers, { eq }) => eq(rivers.slug, riverSlug),
     }),
-  ["subcategory"],
+  ["river"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getCategory = unstable_cache(
-  (categorySlug: string) =>
-    db.query.categories.findFirst({
-      where: (categories, { eq }) => eq(categories.slug, categorySlug),
+export const getOcean = unstable_cache(
+  (oceanSlug: string) =>
+    db.query.oceans.findFirst({
+      where: (oceans, { eq }) => eq(oceans.slug, oceanSlug),
       with: {
-        subcollections: {
+        seas: {
           with: {
-            subcategories: true,
+            rivers: true,
           },
         },
       },
     }),
-  ["category"],
+  ["ocean"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getCollectionDetails = unstable_cache(
-  async (collectionSlug: string) =>
-    db.query.collections.findMany({
+export const getPlanetDetails = unstable_cache(
+  async (planetSlug: string) =>
+    db.query.planets.findMany({
       with: {
-        categories: true,
+        oceans: true,
       },
-      where: (collections, { eq }) => eq(collections.slug, collectionSlug),
-      orderBy: (collections, { asc }) => asc(collections.slug),
+      where: (planets, { eq }) => eq(planets.slug, planetSlug),
+      orderBy: (planets, { asc }) => asc(planets.slug),
     }),
-  ["collection"],
+  ["planet"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getProductCount = unstable_cache(
-  () => db.select({ count: count() }).from(products),
-  ["total-product-count"],
+export const getDropCount = unstable_cache(
+  () => db.select({ count: count() }).from(drops),
+  ["total-drop-count"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-// could be optimized by storing category slug on the products table
-export const getCategoryProductCount = unstable_cache(
-  (categorySlug: string) =>
+// could be optimized by storing ocean slug on the drops table
+export const getOceanDropCount = unstable_cache(
+  (oceanSlug: string) =>
     db
       .select({ count: count() })
-      .from(categories)
+      .from(oceans)
       .leftJoin(
-        subcollections,
-        eq(categories.slug, subcollections.category_slug),
+        seas,
+        eq(oceans.slug, seas.ocean_slug),
       )
       .leftJoin(
-        subcategories,
-        eq(subcollections.id, subcategories.subcollection_id),
+        rivers,
+        eq(seas.id, rivers.sea_id),
       )
-      .leftJoin(products, eq(subcategories.slug, products.subcategory_slug))
-      .where(eq(categories.slug, categorySlug)),
-  ["category-product-count"],
+      .leftJoin(drops, eq(rivers.slug, drops.river_slug))
+      .where(eq(oceans.slug, oceanSlug)),
+  ["ocean-drop-count"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
 );
 
-export const getSubcategoryProductCount = unstable_cache(
-  (subcategorySlug: string) =>
+export const getRiverDropCount = unstable_cache(
+  (riverSlug: string) =>
     db
       .select({ count: count() })
-      .from(products)
-      .where(eq(products.subcategory_slug, subcategorySlug)),
-  ["subcategory-product-count"],
+      .from(drops)
+      .where(eq(drops.river_slug, riverSlug)),
+  ["river-drop-count"],
   {
     revalidate: 60 * 60 * 2, // two hours,
   },
@@ -178,20 +178,20 @@ export const getSearchResults = unstable_cache(
       // If the search term is short (e.g., "W"), use ILIKE for prefix matching
       results = await db
         .select()
-        .from(products)
-        .where(sql`${products.name} ILIKE ${searchTerm + "%"}`) // Prefix match
+        .from(drops)
+        .where(sql`${drops.name} ILIKE ${searchTerm + "%"}`) // Prefix match
         .limit(5)
         .innerJoin(
-          subcategories,
-          sql`${products.subcategory_slug} = ${subcategories.slug}`,
+          rivers,
+          sql`${drops.river_slug} = ${rivers.slug}`,
         )
         .innerJoin(
-          subcollections,
-          sql`${subcategories.subcollection_id} = ${subcollections.id}`,
+          seas,
+          sql`${rivers.sea_id} = ${seas.id}`,
         )
         .innerJoin(
-          categories,
-          sql`${subcollections.category_slug} = ${categories.slug}`,
+          oceans,
+          sql`${seas.ocean_slug} = ${oceans.slug}`,
         );
     } else {
       // For longer search terms, use full-text search with tsquery
@@ -203,22 +203,22 @@ export const getSearchResults = unstable_cache(
 
       results = await db
         .select()
-        .from(products)
+        .from(drops)
         .where(
-          sql`to_tsvector('english', ${products.name}) @@ to_tsquery('english', ${formattedSearchTerm})`,
+          sql`to_tsvector('english', ${drops.name}) @@ to_tsquery('english', ${formattedSearchTerm})`,
         )
         .limit(5)
         .innerJoin(
-          subcategories,
-          sql`${products.subcategory_slug} = ${subcategories.slug}`,
+          rivers,
+          sql`${drops.river_slug} = ${rivers.slug}`,
         )
         .innerJoin(
-          subcollections,
-          sql`${subcategories.subcollection_id} = ${subcollections.id}`,
+          seas,
+          sql`${rivers.sea_id} = ${seas.id}`,
         )
         .innerJoin(
-          categories,
-          sql`${subcollections.category_slug} = ${categories.slug}`,
+          oceans,
+          sql`${seas.ocean_slug} = ${oceans.slug}`,
         );
     }
 

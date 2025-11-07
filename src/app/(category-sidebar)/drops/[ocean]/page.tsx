@@ -1,27 +1,27 @@
 import Image from "next/image";
 import { Link } from "@/components/ui/link";
 import { notFound } from "next/navigation";
-import { getCategory, getCategoryProductCount } from "@/lib/queries";
+import { getOcean, getOceanDropCount } from "@/lib/queries";
 import { db } from "@/db";
-import { categories } from "@/db/schema";
+import { oceans } from "@/db/schema";
 
 export async function generateStaticParams() {
-  return await db.select({ category: categories.slug }).from(categories);
+  return await db.select({ ocean: oceans.slug }).from(oceans);
 }
 
 export default async function Page(props: {
   params: Promise<{
-    category: string;
+    ocean: string;
   }>;
 }) {
-  const { category } = await props.params;
-  const urlDecoded = decodeURIComponent(category);
-  const cat = await getCategory(urlDecoded);
-  if (!cat) {
+  const { ocean } = await props.params;
+  const urlDecoded = decodeURIComponent(ocean);
+  const oceanData = await getOcean(urlDecoded);
+  if (!oceanData) {
     return notFound();
   }
 
-  const countRes = await getCategoryProductCount(urlDecoded);
+  const countRes = await getOceanDropCount(urlDecoded);
 
   const finalCount = countRes[0]?.count;
 
@@ -29,30 +29,30 @@ export default async function Page(props: {
     <div className="container p-4">
       {finalCount && (
         <h1 className="mb-2 border-b-2 text-sm font-bold">
-          {finalCount} {finalCount === 1 ? "Product" : "Products"}
+          {finalCount} {finalCount === 1 ? "Drop" : "Drops"}
         </h1>
       )}
       <div className="space-y-4">
-        {cat.subcollections.map((subcollection, index) => (
+        {oceanData.seas.map((sea, index) => (
           <div key={index}>
             <h2 className="mb-2 border-b-2 text-lg font-semibold">
-              {subcollection.name}
+              {sea.name}
             </h2>
             <div className="flex flex-row flex-wrap gap-2">
-              {subcollection.subcategories.map(
-                (subcategory, subcategoryIndex) => (
+              {sea.rivers.map(
+                (river, riverIndex) => (
                   <Link
                     prefetch={true}
-                    key={subcategoryIndex}
+                    key={riverIndex}
                     className="group flex h-full w-full flex-row gap-2 border px-4 py-2 hover:bg-gray-100 sm:w-[200px]"
-                    href={`/products/${category}/${subcategory.slug}`}
+                    href={`/drops/${ocean}/${river.slug}`}
                   >
                     <div className="py-2">
                       <Image
                         loading="eager"
                         decoding="sync"
-                        src={subcategory.image_url ?? "/placeholder.svg"}
-                        alt={`A small picture of ${subcategory.name}`}
+                        src={river.image_url ?? "/placeholder.svg"}
+                        alt={`A small picture of ${river.name}`}
                         width={48}
                         height={48}
                         quality={65}
@@ -61,7 +61,7 @@ export default async function Page(props: {
                     </div>
                     <div className="flex h-16 flex-grow flex-col items-start py-2">
                       <div className="text-sm font-medium text-gray-700 group-hover:underline">
-                        {subcategory.name}
+                        {river.name}
                       </div>
                     </div>
                   </Link>
