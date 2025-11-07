@@ -1,19 +1,19 @@
 import slugify from "slugify";
-import { products, subcategories } from "../src/db/schema";
+import { drops, rivers } from "../src/db/schema";
 import { db } from "../src/db";
 import { eq, isNull } from "drizzle-orm";
 
 const readline = require("readline");
 const fs = require("fs");
 
-const getEmptySubcategories = async () => {
-  const subcategoriesWithoutProducts = await db
+const getEmptyRivers = async () => {
+  const riversWithoutDrops = await db
     .select()
-    .from(subcategories)
-    .leftJoin(products, eq(products.subcategory_slug, subcategories.slug))
-    .where(isNull(products.subcategory_slug));
+    .from(rivers)
+    .leftJoin(drops, eq(drops.river_slug, rivers.slug))
+    .where(isNull(drops.river_slug));
 
-  return subcategoriesWithoutProducts.map((s) => s.subcategories.slug);
+  return riversWithoutDrops.map((s) => s.rivers.slug);
 };
 
 function getRandomObjects(arr: any[], count: number) {
@@ -43,26 +43,26 @@ const getBody = async () => {
   rl.on("line", (line: string) => {
     try {
       const parsedLine = JSON.parse(line);
-      const subcategory_slug = parsedLine.custom_id;
+      const river_slug = parsedLine.custom_id;
       const response = JSON.parse(
         parsedLine.response.body.choices[0].message.content,
       );
 
-      const products = response.products;
+      const dropsData = response.drops;
 
-      const productsToAdd = products.map(
-        (product: { name: string; description: string }) => {
+      const dropsToAdd = dropsData.map(
+        (drop: { name: string; description: string }) => {
           const price = parseFloat((Math.random() * 20 + 5).toFixed(1));
           return {
-            slug: slugify(product.name, { lower: true }),
-            name: product.name,
-            description: product.description ?? "",
+            slug: slugify(drop.name, { lower: true }),
+            name: drop.name,
+            description: drop.description ?? "",
             price,
-            subcategory_slug,
+            river_slug,
           };
         },
       );
-      body.push(...productsToAdd);
+      body.push(...dropsToAdd);
     } catch (err) {
       console.error("Error parsing JSON:", err);
       fs.appendFile("scripts/errors.txt", line + "\n", (err: any) => {
@@ -78,58 +78,58 @@ const getBody = async () => {
     console.log(body.length);
     for (let i = 0; i < body.length; i += 10000) {
       const chunk = body.slice(i, i + 10000);
-      await db.insert(products).values(chunk).onConflictDoNothing();
-      console.log(`Inserted products ${i} to ${i + chunk.length}`);
+      await db.insert(drops).values(chunk).onConflictDoNothing();
+      console.log(`Inserted drops ${i} to ${i + chunk.length}`);
       await new Promise((resolve) => setTimeout(resolve, 100)); // 100 ms
     }
 
     // const data = [] as any[];
-    // const subcategories = await getEmptySubcategories();
-    // subcategories.forEach((subcat) => {
-    //   // get 30 random products from body, regardless of subcategory_slug
-    //   const products = getRandomObjects(body, 30).map((product) => {
+    // const riversData = await getEmptyRivers();
+    // riversData.forEach((river) => {
+    //   // get 30 random drops from body, regardless of river_slug
+    //   const dropsData = getRandomObjects(body, 30).map((drop) => {
     //     return {
-    //       ...product,
-    //       subcategory_slug: subcat,
-    //       slug: slugify(product.name, { lower: true }) + "-1",
+    //       ...drop,
+    //       river_slug: river,
+    //       slug: slugify(drop.name, { lower: true }) + "-1",
     //     };
     //   });
-    //   data.push(...products);
+    //   data.push(...dropsData);
     // });
 
     // for (let i = 0; i < data.length; i += 10000) {
     //   const chunk = data.slice(i, i + 10000);
-    //   await db.insert(products).values(chunk).onConflictDoNothing();
-    //   console.log(`Inserted products ${i} to ${i + chunk.length}`);
+    //   await db.insert(drops).values(chunk).onConflictDoNothing();
+    //   console.log(`Inserted drops ${i} to ${i + chunk.length}`);
     //   await new Promise((resolve) => setTimeout(resolve, 100)); // Delay of 0.1 second
     // }
 
-    // console.log("Inserted products");
+    // console.log("Inserted drops");
   });
 };
 
 // getBody();
 
-const duplicateProducts = async () => {
+const duplicateDrops = async () => {
   for (let i = 0; i < 13; i += 1) {
-    const p = await db
+    const d = await db
       .select()
-      .from(products)
+      .from(drops)
       .limit(10000)
       .offset(i * 10000);
 
-    const productsToAdd = p.map((product) => {
+    const dropsToAdd = d.map((drop) => {
       return {
-        ...product,
-        name: product.name + " V2",
-        slug: product.slug + "-v2",
+        ...drop,
+        name: drop.name + " V2",
+        slug: drop.slug + "-v2",
       };
     });
 
-    await db.insert(products).values(productsToAdd).onConflictDoNothing();
-    console.log(`Inserted products ${i * 10000} to ${(i + 1) * 10000}`);
+    await db.insert(drops).values(dropsToAdd).onConflictDoNothing();
+    console.log(`Inserted drops ${i * 10000} to ${(i + 1) * 10000}`);
   }
-  console.log("Inserted products");
+  console.log("Inserted drops");
 };
 
-// duplicateProducts();
+// duplicateDrops();

@@ -3,81 +3,81 @@ WITH numbered_image_urls AS (
   SELECT image_url, ROW_NUMBER() OVER () AS rn
   FROM (
     SELECT image_url FROM (
-      SELECT image_url FROM categories WHERE image_url IS NOT NULL
+      SELECT image_url FROM oceans WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM subcategories WHERE image_url IS NOT NULL
+      SELECT image_url FROM rivers WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM products WHERE image_url IS NOT NULL
+      SELECT image_url FROM drops WHERE image_url IS NOT NULL
     ) AS all_images
     ORDER BY RANDOM()
   ) AS random_images
 ),
 
--- Step 2: Create a temporary table of products with NULL image_url and assign a random row number
-numbered_products AS (
+-- Step 2: Create a temporary table of drops with NULL image_url and assign a random row number
+numbered_drops AS (
   SELECT slug, ROW_NUMBER() OVER (ORDER BY RANDOM()) AS rn
-  FROM products
+  FROM drops
   WHERE image_url IS NULL
 )
 
--- Step 3: Update products by matching the row numbers modulo the count of image URLs
-UPDATE products p
+-- Step 3: Update drops by matching the row numbers modulo the count of image URLs
+UPDATE drops d
 SET image_url = niu.image_url
-FROM numbered_products np
+FROM numbered_drops nd
 JOIN numbered_image_urls niu
-  ON ((np.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
-WHERE p.slug = np.slug;
+  ON ((nd.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
+WHERE d.slug = nd.slug;
 
--- Update categories with NULL image_url
+-- Update oceans with NULL image_url
 WITH numbered_image_urls AS (
   SELECT image_url, ROW_NUMBER() OVER () AS rn
   FROM (
     SELECT image_url FROM (
-      SELECT image_url FROM categories WHERE image_url IS NOT NULL
+      SELECT image_url FROM oceans WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM subcategories WHERE image_url IS NOT NULL
+      SELECT image_url FROM rivers WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM products WHERE image_url IS NOT NULL
+      SELECT image_url FROM drops WHERE image_url IS NOT NULL
     ) AS all_images
     ORDER BY RANDOM()
   ) AS random_images
 ),
-numbered_categories AS (
+numbered_oceans AS (
   SELECT slug, ROW_NUMBER() OVER (ORDER BY RANDOM()) AS rn
-  FROM categories
+  FROM oceans
   WHERE image_url IS NULL
 )
-UPDATE categories c
+UPDATE oceans o
 SET image_url = niu.image_url
-FROM numbered_categories nc
+FROM numbered_oceans no
 JOIN numbered_image_urls niu
-  ON ((nc.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
-WHERE c.slug = nc.slug;
+  ON ((no.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
+WHERE o.slug = no.slug;
 
 
--- Update subcategories with NULL image_url
+-- Update rivers with NULL image_url
 WITH numbered_image_urls AS (
   SELECT image_url, ROW_NUMBER() OVER () AS rn
   FROM (
     SELECT image_url FROM (
-      SELECT image_url FROM categories WHERE image_url IS NOT NULL
+      SELECT image_url FROM oceans WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM subcategories WHERE image_url IS NOT NULL
+      SELECT image_url FROM rivers WHERE image_url IS NOT NULL
       UNION ALL
-      SELECT image_url FROM products WHERE image_url IS NOT NULL
+      SELECT image_url FROM drops WHERE image_url IS NOT NULL
     ) AS all_images
     ORDER BY RANDOM()
   ) AS random_images
 ),
-numbered_subcategories AS (
+numbered_rivers AS (
   SELECT slug, ROW_NUMBER() OVER (ORDER BY RANDOM()) AS rn
-  FROM subcategories
+  FROM rivers
   WHERE image_url IS NULL
 )
-UPDATE subcategories sc
+UPDATE rivers r
 SET image_url = niu.image_url
-FROM numbered_subcategories nsc
+FROM numbered_rivers nr
 JOIN numbered_image_urls niu
-  ON ((nsc.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
-WHERE sc.slug = nsc.slug;
+  ON ((nr.rn - 1) % (SELECT COUNT(*) FROM numbered_image_urls) + 1) = niu.rn
+WHERE r.slug = nr.slug;
 
