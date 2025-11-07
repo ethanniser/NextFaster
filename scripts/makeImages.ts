@@ -2,9 +2,9 @@ import { put } from "@vercel/blob";
 import { db } from "../src/db";
 import { Effect, Schedule } from "effect";
 import {
-  products as products_table,
-  categories as categories_table,
-  subcategories as subcategories_table,
+  drops as drops_table,
+  oceans as oceans_table,
+  rivers as rivers_table,
 } from "../src/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -40,108 +40,108 @@ const uploadImage = (imageUrl: string, path: string) =>
   });
 
 const main = Effect.gen(function* () {
-  const products = yield* Effect.tryPromise(() =>
-    db.query.products.findMany({
-      where: (products, { isNull }) => isNull(products.image_url),
+  const drops = yield* Effect.tryPromise(() =>
+    db.query.drops.findMany({
+      where: (drops, { isNull }) => isNull(drops.image_url),
     }),
   );
-  console.log(`found ${products.length} products`);
+  console.log(`found ${drops.length} drops`);
 
   yield* Effect.all(
-    products.map((product) =>
+    drops.map((drop) =>
       Effect.gen(function* () {
-        console.log(`generating image for ${product.name}`);
+        console.log(`generating image for ${drop.name}`);
         const imageRes = yield* generateImage(`
             Generate a product photo for this product:
-            Product Name: ${product.name}
-            Product Description: ${product.description}`);
+            Product Name: ${drop.name}
+            Product Description: ${drop.description}`);
         const imageUrl = imageRes.url;
         if (!imageUrl) {
           return yield* Effect.fail("no image");
         }
-        console.log(`uploading image for ${product.name} - ${imageUrl}`);
+        console.log(`uploading image for ${drop.name} - ${imageUrl}`);
         const { url } = yield* uploadImage(
           imageUrl,
-          `products/${product.slug}`,
+          `drops/${drop.slug}`,
         );
-        console.log(`uploaded image for ${product.name}`);
+        console.log(`uploaded image for ${drop.name}`);
         yield* Effect.tryPromise(() =>
           db
-            .update(products_table)
+            .update(drops_table)
             .set({ image_url: url })
-            .where(eq(products_table.slug, product.slug)),
+            .where(eq(drops_table.slug, drop.slug)),
         );
       }),
     ),
     { concurrency: 10 },
   );
 
-  const categories = yield* Effect.tryPromise(() =>
-    db.query.categories.findMany({
-      where: (categories, { isNull }) => isNull(categories.image_url),
+  const oceans = yield* Effect.tryPromise(() =>
+    db.query.oceans.findMany({
+      where: (oceans, { isNull }) => isNull(oceans.image_url),
     }),
   );
 
-  console.log(`found ${categories.length} categories`);
+  console.log(`found ${oceans.length} oceans`);
 
   yield* Effect.all(
-    categories.map((category) =>
+    oceans.map((ocean) =>
       Effect.gen(function* () {
-        console.log(`generating image for ${category.name}`);
+        console.log(`generating image for ${ocean.name}`);
         const imageRes = yield* generateImage(`
             Generate a product photo for this product category:
-            Category Name: ${category.name}`);
+            Category Name: ${ocean.name}`);
         const imageUrl = imageRes.url;
         if (!imageUrl) {
           return yield* Effect.fail("no image");
         }
-        console.log(`uploading image for ${category.name} - ${imageUrl}`);
+        console.log(`uploading image for ${ocean.name} - ${imageUrl}`);
         const { url } = yield* uploadImage(
           imageUrl,
-          `categories/${category.slug}`,
+          `oceans/${ocean.slug}`,
         );
-        console.log(`uploaded image for ${category.name}`);
+        console.log(`uploaded image for ${ocean.name}`);
         yield* Effect.tryPromise(() =>
           db
-            .update(categories_table)
+            .update(oceans_table)
             .set({ image_url: url })
-            .where(eq(categories_table.slug, category.slug)),
+            .where(eq(oceans_table.slug, ocean.slug)),
         );
       }),
     ),
     { concurrency: 10 },
   );
 
-  const subcategories = yield* Effect.tryPromise(() =>
-    db.query.subcategories.findMany({
-      where: (subcategories, { isNull }) => isNull(subcategories.image_url),
+  const rivers = yield* Effect.tryPromise(() =>
+    db.query.rivers.findMany({
+      where: (rivers, { isNull }) => isNull(rivers.image_url),
     }),
   );
 
-  console.log(`found ${subcategories.length} subcategories`);
+  console.log(`found ${rivers.length} rivers`);
 
   yield* Effect.all(
-    subcategories.map((category) =>
+    rivers.map((river) =>
       Effect.gen(function* () {
-        console.log(`generating image for ${category.name}`);
+        console.log(`generating image for ${river.name}`);
         const imageRes = yield* generateImage(`
             Generate a product photo for this product category:
-            Category Name: ${category.name}`);
+            Category Name: ${river.name}`);
         const imageUrl = imageRes.url;
         if (!imageUrl) {
           return yield* Effect.fail("no image");
         }
-        console.log(`uploading image for ${category.name} - ${imageUrl}`);
+        console.log(`uploading image for ${river.name} - ${imageUrl}`);
         const { url } = yield* uploadImage(
           imageUrl,
-          `subcategories/${category.slug}`,
+          `rivers/${river.slug}`,
         );
-        console.log(`uploaded image for ${category.name}`);
+        console.log(`uploaded image for ${river.name}`);
         yield* Effect.tryPromise(() =>
           db
-            .update(subcategories_table)
+            .update(rivers_table)
             .set({ image_url: url })
-            .where(eq(subcategories_table.slug, category.slug)),
+            .where(eq(rivers_table.slug, river.slug)),
         );
       }),
     ),
