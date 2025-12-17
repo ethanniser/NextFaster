@@ -3,13 +3,10 @@ const nextConfig = {
   experimental: {
     ppr: true,
     inlineCss: true,
-    reactCompiler: true,
   },
+  reactCompiler: true,
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   images: {
     minimumCacheTTL: 31536000,
