@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    ppr: false,
+    ppr: true,
     inlineCss: true,
     reactCompiler: true,
   },
@@ -30,7 +30,7 @@ const nextConfig = {
         destination:
           "https://cdn.vercel-insights.com/v1/speed-insights/script.js",
       },
-	      {
+      {
         source: "/insights/events.js",
         destination: "https://cdn.vercel-insights.com/v1/script.js",
       },
