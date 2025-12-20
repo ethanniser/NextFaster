@@ -25,14 +25,14 @@ import {
 //   }));
 // }
 
-export async function generateStaticParams() {
-  return [
-    {
-      subcategory: "__placeholder__",
-      category: "__placeholder__",
-    },
-  ];
-}
+// export async function generateStaticParams() {
+//   return [
+//     {
+//       subcategory: "__placeholder__",
+//       category: "__placeholder__",
+//     },
+//   ];
+// }
 
 export async function generateMetadata(props: {
   params: Promise<{ category: string; subcategory: string }>;

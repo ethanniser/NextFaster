@@ -29,15 +29,15 @@ import { getProductDetails, getProductsForSubcategory } from "@/lib/queries";
 //   }));
 // }
 
-export async function generateStaticParams() {
-  return [
-    {
-      product: "__placeholder__",
-      subcategory: "__placeholder__",
-      category: "__placeholder__",
-    },
-  ];
-}
+// export async function generateStaticParams() {
+//   return [
+//     {
+//       product: "__placeholder__",
+//       subcategory: "__placeholder__",
+//       category: "__placeholder__",
+//     },
+//   ];
+// }
 
 export async function generateMetadata(props: {
   params: Promise<{ product: string; category: string; subcategory: string }>;

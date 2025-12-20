@@ -93,7 +93,9 @@ export default async function RootLayout({
               </div>
             </div>
           </header>
-          <div className="pt-[85px] sm:pt-[70px]">{children}</div>
+          <div className="pt-[85px] sm:pt-[70px]">
+            <Suspense>{children}</Suspense>
+          </div>
         </div>
         <footer className="fixed bottom-0 flex h-12 w-screen flex-col items-center justify-between space-y-2 border-t border-gray-400 bg-background px-4 font-sans text-[11px] sm:h-6 sm:flex-row sm:space-y-0">
           <div className="flex flex-wrap justify-center space-x-2 pt-2 sm:justify-start">

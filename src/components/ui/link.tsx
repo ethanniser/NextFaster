@@ -1,5 +1,6 @@
 "use client";
 
+import { PrefetchKind } from "next/dist/client/components/router-reducer/router-reducer-types";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -51,7 +52,9 @@ export const Link: typeof NextLink = (({ children, ...props }) => {
         const entry = entries[0];
         if (entry.isIntersecting) {
           prefetchTimeout = setTimeout(async () => {
-            router.prefetch(String(props.href));
+            router.prefetch(String(props.href), {
+              kind: PrefetchKind.FULL,
+            });
             await sleep(0);
 
             if (!imageCache.has(String(props.href))) {
@@ -108,7 +111,9 @@ export const Link: typeof NextLink = (({ children, ...props }) => {
         e.preventDefault();
       }}
       onMouseEnter={() => {
-        router.prefetch(String(props.href));
+        router.prefetch(String(props.href), {
+          kind: PrefetchKind.FULL,
+        });
         const images = imageCache.get(String(props.href)) || [];
         for (const image of images) prefetchImage(image);
       }}
