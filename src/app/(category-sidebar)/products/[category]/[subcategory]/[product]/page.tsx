@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { AddToCartForm } from "@/components/add-to-cart-form";
 import { Metadata } from "next";
+import { cacheLife } from "next/cache";
 
 import { getProductDetails, getProductsForSubcategory } from "@/lib/queries";
 // import { db } from "@/db";
@@ -28,6 +29,16 @@ import { getProductDetails, getProductsForSubcategory } from "@/lib/queries";
 //   }));
 // }
 
+export async function generateStaticParams() {
+  return [
+    {
+      product: "__placeholder__",
+      subcategory: "__placeholder__",
+      category: "__placeholder__",
+    },
+  ];
+}
+
 export async function generateMetadata(props: {
   params: Promise<{ product: string; category: string; subcategory: string }>;
 }): Promise<Metadata> {
@@ -45,14 +56,18 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function Page(props: {
-  params: Promise<{
-    product: string;
-    subcategory: string;
-    category: string;
-  }>;
+async function CachedProductPage({
+  product,
+  subcategory,
+  category,
+}: {
+  product: string;
+  subcategory: string;
+  category: string;
 }) {
-  const { product, subcategory, category } = await props.params;
+  "use cache";
+  cacheLife({ revalidate: 60 * 60 * 24 }); // 1 day
+
   const urlDecodedProduct = decodeURIComponent(product);
   const urlDecodedSubcategory = decodeURIComponent(subcategory);
   const [productData, relatedUnshifted] = await Promise.all([
@@ -102,18 +117,40 @@ export default async function Page(props: {
           </h2>
         )}
         <div className="flex flex-row flex-wrap gap-2">
-          {related?.map((product) => (
+          {related?.map((p) => (
             <ProductLink
-              key={product.name}
+              key={p.name}
               loading="lazy"
               category_slug={category}
               subcategory_slug={subcategory}
-              product={product}
-              imageUrl={product.image_url}
+              product={p}
+              imageUrl={p.image_url}
             />
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+export default async function Page(props: {
+  params: Promise<{
+    product: string;
+    subcategory: string;
+    category: string;
+  }>;
+}) {
+  const { product, subcategory, category } = await props.params;
+
+  if (product === "__placeholder__") {
+    return notFound();
+  }
+
+  return (
+    <CachedProductPage
+      product={product}
+      subcategory={subcategory}
+      category={category}
+    />
   );
 }

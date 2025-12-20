@@ -1,9 +1,13 @@
 import { Link } from "@/components/ui/link";
 import { getCollections, getProductCount } from "@/lib/queries";
+import { cacheLife } from "next/cache";
 
 import Image from "next/image";
 
-export default async function Home() {
+async function CachedHomePage() {
+  "use cache";
+  cacheLife({ revalidate: 60 * 60 * 24 }); // 1 day
+
   const [collections, productCount] = await Promise.all([
     getCollections(),
     getProductCount(),
@@ -44,4 +48,8 @@ export default async function Home() {
       ))}
     </div>
   );
+}
+
+export default async function Home() {
+  return <CachedHomePage />;
 }
