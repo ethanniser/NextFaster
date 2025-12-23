@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
@@ -45,16 +45,6 @@ export function SearchDropdownComponent() {
     }
   }, [searchTerm, inputRef]);
 
-  const params = useParams();
-  useEffect(() => {
-    if (!params.product) {
-      const subcategory = params.subcategory;
-      setSearchTerm(
-        typeof subcategory === "string" ? subcategory.replaceAll("-", " ") : "",
-      );
-    }
-  }, [params]);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       setHighlightedIndex((prevIndex) =>
@@ -92,6 +82,9 @@ export function SearchDropdownComponent() {
 
   return (
     <div className="font-sans" ref={dropdownRef}>
+      <Suspense fallback={null}>
+        <SearchTermFromParams setSearchTerm={setSearchTerm} />
+      </Suspense>
       <div className="relative flex-grow">
         <div className="relative">
           <Input
@@ -168,4 +161,22 @@ export function SearchDropdownComponent() {
       </div>
     </div>
   );
+}
+
+function SearchTermFromParams({
+  setSearchTerm,
+}: {
+  setSearchTerm: (term: string) => void;
+}) {
+  const params = useParams();
+  useEffect(() => {
+    if (!params.product) {
+      const subcategory = params.subcategory;
+      setSearchTerm(
+        typeof subcategory === "string" ? subcategory.replaceAll("-", " ") : "",
+      );
+    }
+  }, [params, setSearchTerm]);
+
+  return null;
 }

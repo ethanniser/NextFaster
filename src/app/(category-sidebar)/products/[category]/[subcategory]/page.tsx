@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProductLink } from "@/components/ui/product-card";
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import {
   getProductsForSubcategory,
   getSubcategory,
@@ -24,10 +25,24 @@ import {
 //   }));
 // }
 
+export async function generateStaticParams() {
+  return [
+    {
+      subcategory: "__placeholder__",
+      category: "__placeholder__",
+    },
+  ];
+}
+
 export async function generateMetadata(props: {
   params: Promise<{ category: string; subcategory: string }>;
 }): Promise<Metadata> {
   const { subcategory: subcategoryParam } = await props.params;
+
+  if (subcategoryParam === "__placeholder__") {
+    return notFound();
+  }
+
   const urlDecodedCategory = decodeURIComponent(subcategoryParam);
 
   const [subcategory, rows] = await Promise.all([
@@ -48,14 +63,16 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function Page(props: {
-  params: Promise<{
-    subcategory: string;
-    category: string;
-  }>;
+async function CachedSubcategoryPage({
+  subcategory,
+  category,
+}: {
+  subcategory: string;
+  category: string;
 }) {
-  const { subcategory, category } = await props.params;
-  // const urlDecodedCategory = decodeURIComponent(category);
+  "use cache";
+  cacheLife({ revalidate: 60 * 60 * 24 }); // 1 day
+
   const urlDecodedSubcategory = decodeURIComponent(subcategory);
   const [products, countRes] = await Promise.all([
     getProductsForSubcategory(urlDecodedSubcategory),
@@ -89,5 +106,22 @@ export default async function Page(props: {
         ))}
       </div>
     </div>
+  );
+}
+
+export default async function Page(props: {
+  params: Promise<{
+    subcategory: string;
+    category: string;
+  }>;
+}) {
+  const { subcategory, category } = await props.params;
+
+  if (subcategory === "__placeholder__") {
+    return notFound();
+  }
+
+  return (
+    <CachedSubcategoryPage subcategory={subcategory} category={category} />
   );
 }
