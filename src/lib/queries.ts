@@ -45,9 +45,11 @@ export async function getUser() {
 }
 
 export async function getProductsForSubcategory(subcategorySlug: string) {
-  "use cache: remote";
-  cacheTag("subcategory-products");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";
+  // cacheTag("subcategory-products");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting products for subcategory ", subcategorySlug, " cache for 2 hours");
 
   return db.query.products.findMany({
     where: (products, { eq, and }) =>
@@ -61,6 +63,8 @@ export async function getCollections() {
   cacheTag("collections");
   cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
 
+  console.log("Getting collections cache for 2 hours");
+
   return db.query.collections.findMany({
     with: {
       categories: true,
@@ -70,9 +74,11 @@ export async function getCollections() {
 }
 
 export async function getProductDetails(productSlug: string) {
-  "use cache: remote";
-  cacheTag("product");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";;
+  // cacheTag("product");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting product details for", productSlug, " cache for 2 hours");
 
   return db.query.products.findFirst({
     where: (products, { eq }) => eq(products.slug, productSlug),
@@ -80,9 +86,11 @@ export async function getProductDetails(productSlug: string) {
 }
 
 export async function getSubcategory(subcategorySlug: string) {
-  "use cache: remote";
-  cacheTag("subcategory");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";;
+  // cacheTag("subcategory");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting subcategory details for", subcategorySlug, " cache for 2 hours");
 
   return db.query.subcategories.findFirst({
     where: (subcategories, { eq }) => eq(subcategories.slug, subcategorySlug),
@@ -93,6 +101,8 @@ export async function getCategory(categorySlug: string) {
   "use cache: remote";
   cacheTag("category");
   cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting category details for", categorySlug, " cache for 2 hours");
 
   return db.query.categories.findFirst({
     where: (categories, { eq }) => eq(categories.slug, categorySlug),
@@ -107,9 +117,11 @@ export async function getCategory(categorySlug: string) {
 }
 
 export async function getCollectionDetails(collectionSlug: string) {
-  "use cache: remote";
+  "use cache: remote";;
   cacheTag("collection");
   cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting collection details for", collectionSlug, " cache for 2 hours");
 
   return db.query.collections.findMany({
     with: {
@@ -121,9 +133,11 @@ export async function getCollectionDetails(collectionSlug: string) {
 }
 
 export async function getProductCount() {
-  "use cache: remote";
-  cacheTag("total-product-count");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";;
+  // cacheTag("total-product-count");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting product count cache for 2 hours");
 
   return db.select({ count: count() }).from(products);
 }
@@ -133,6 +147,8 @@ export async function getCategoryProductCount(categorySlug: string) {
   "use cache: remote";
   cacheTag("category-product-count");
   cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting category product count for", categorySlug, " cache for 2 hours");
 
   return db
     .select({ count: count() })
@@ -147,9 +163,11 @@ export async function getCategoryProductCount(categorySlug: string) {
 }
 
 export async function getSubcategoryProductCount(subcategorySlug: string) {
-  "use cache: remote";
-  cacheTag("subcategory-product-count");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";;
+  // cacheTag("subcategory-product-count");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting subcategory product count for", subcategorySlug, " cache for 2 hours");
 
   return db
     .select({ count: count() })
@@ -158,9 +176,11 @@ export async function getSubcategoryProductCount(subcategorySlug: string) {
 }
 
 export async function getSearchResults(searchTerm: string) {
-  "use cache: remote";
-  cacheTag("search-results");
-  cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+  // "use cache: remote";;
+  // cacheTag("search-results");
+  // cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
+
+  console.log("Getting search results for", searchTerm, " cache for 2 hours");
 
   let results;
 
