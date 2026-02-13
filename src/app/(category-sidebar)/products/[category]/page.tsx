@@ -2,11 +2,19 @@ import Image from "next/image";
 import { Link } from "@/components/ui/link";
 import { notFound } from "next/navigation";
 import { getCategory, getCategoryProductCount } from "@/lib/queries";
-import { db } from "@/db";
-import { categories } from "@/db/schema";
+// import { db } from "@/db";
+// import { categories } from "@/db/schema";
+
+// export async function generateStaticParams() {
+//   return await db.select({ category: categories.slug }).from(categories);
+// }
 
 export async function generateStaticParams() {
-  return await db.select({ category: categories.slug }).from(categories);
+  return [
+    {
+      category: "__placeholder__",
+    },
+  ];
 }
 
 export default async function Page(props: {
@@ -15,6 +23,11 @@ export default async function Page(props: {
   }>;
 }) {
   const { category } = await props.params;
+
+  if (category === "__placeholder__") {
+    return notFound();
+  }
+
   const urlDecoded = decodeURIComponent(category);
   const cat = await getCategory(urlDecoded);
   if (!cat) {
