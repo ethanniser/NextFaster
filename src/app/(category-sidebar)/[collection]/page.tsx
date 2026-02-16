@@ -1,22 +1,13 @@
 import { Link } from "@/components/ui/link";
-// import { db } from "@/db";
-// import { collections } from "@/db/schema";
+import { db } from "@/db";
+import { collections } from "@/db/schema";
 import { getCollectionDetails } from "@/lib/queries";
 import { cacheLife } from "next/cache";
 
 import Image from "next/image";
-import { notFound } from "next/navigation";
-
-// export async function generateStaticParams() {
-//   return await db.select({ collection: collections.slug }).from(collections);
-// }
 
 export async function generateStaticParams() {
-  return [
-    {
-      collection: "__placeholder__",
-    },
-  ];
+  return await db.select({ collection: collections.slug }).from(collections);
 }
 
 async function CachedCollectionPage({ collection }: { collection: string }) {
@@ -66,10 +57,6 @@ export default async function Home(props: {
   }>;
 }) {
   const { collection } = await props.params;
-
-  if (collection === "__placeholder__") {
-    return notFound();
-  }
 
   return <CachedCollectionPage collection={collection} />;
 }
