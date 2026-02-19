@@ -194,32 +194,26 @@ export async function getCategoryProductCount(categorySlug: string) {
   cacheTag("category-product-count");
   cacheLife({ revalidate: 60 * 60 * 2 }); // two hours
 
-  return tracer.startActiveSpan(
-    "db.getCategoryProductCount",
-    async (span) => {
-      try {
-        span.setAttribute("category.slug", categorySlug);
-        return await db
-          .select({ count: count() })
-          .from(categories)
-          .leftJoin(
-            subcollections,
-            eq(categories.slug, subcollections.category_slug),
-          )
-          .leftJoin(
-            subcategories,
-            eq(subcollections.id, subcategories.subcollection_id),
-          )
-          .leftJoin(
-            products,
-            eq(subcategories.slug, products.subcategory_slug),
-          )
-          .where(eq(categories.slug, categorySlug));
-      } finally {
-        span.end();
-      }
-    },
-  );
+  return tracer.startActiveSpan("db.getCategoryProductCount", async (span) => {
+    try {
+      span.setAttribute("category.slug", categorySlug);
+      return await db
+        .select({ count: count() })
+        .from(categories)
+        .leftJoin(
+          subcollections,
+          eq(categories.slug, subcollections.category_slug),
+        )
+        .leftJoin(
+          subcategories,
+          eq(subcollections.id, subcategories.subcollection_id),
+        )
+        .leftJoin(products, eq(subcategories.slug, products.subcategory_slug))
+        .where(eq(categories.slug, categorySlug));
+    } finally {
+      span.end();
+    }
+  });
 }
 
 export async function getSubcategoryProductCount(subcategorySlug: string) {

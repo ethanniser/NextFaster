@@ -120,7 +120,7 @@ export function SearchDropdownComponent() {
             <ScrollArea className="h-[300px]">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item, index) => (
-                  <Link href={item.href} key={item.slug} prefetch={true}>
+                  <Link href={item.href} key={item.slug}>
                     <div
                       className={cn("flex cursor-pointer items-center p-2", {
                         "bg-gray-100": index === highlightedIndex,

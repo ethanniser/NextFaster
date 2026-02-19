@@ -54,7 +54,6 @@ export function ProductLink(props: {
   }, [prefetchProps]);
   return (
     <Link
-      prefetch={true}
       className="group flex h-[130px] w-full flex-row border px-4 py-2 hover:bg-gray-100 sm:w-[250px]"
       href={`/products/${category_slug}/${subcategory_slug}/${product.slug}`}
     >

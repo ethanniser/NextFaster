@@ -25,7 +25,6 @@ async function CachedHomePage() {
           <div className="flex flex-row flex-wrap justify-center gap-2 border-b-2 py-4 sm:justify-start">
             {collection.categories.map((category) => (
               <Link
-                prefetch={true}
                 key={category.name}
                 className="flex w-[125px] flex-col items-center text-center"
                 href={`/products/${category.slug}`}
