@@ -55,14 +55,14 @@ This project is hosted on Vercel, and uses many of the features of the Vercel pl
 
 Here is the full breakdown of the cost of running this project from Oct 20th 2024 through Nov 11th 2024.
 
-During that time, the project recieved **over 1 million page views** across 45k unique users. The site has **over 1 million unique pages and images\***.
+During that time, the project received **over 1 million page views** across 45k unique users. The site has **over 1 million unique pages and images\***.
 
-\*_images are unique by url (and caching) although not unqiue in their content_
+\*_images are unique by url (and caching) although not unique in their content_
 
 #### Summary:
 
 - ~1 million page views
-- ~1 million unqiue product pages
+- ~1 million unique product pages
 - 45k unique users
 - $513.12
 
