@@ -80,30 +80,37 @@ export const Link: typeof NextLink = (({ children, ...props }) => {
     };
   }, [props.href, props.prefetch]);
 
+  const handledRef = useRef(false);
+
   return (
     <NextLink
       ref={linkRef}
       prefetch={false}
+      onPointerDown={(e) => {
+        handledRef.current = false;
+
+        // Only left-button mouse. Ignore touch/pen (scroll), and ignore keyboard.
+        if (e.pointerType !== "mouse") return;
+        if (e.button !== 0) return;
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+        const url = new URL(String(props.href), window.location.href);
+        if (url.origin !== window.location.origin) return;
+
+        e.preventDefault(); // cancel native navigation + focus quirks
+        handledRef.current = true;
+        router.push(String(props.href)); // earliest safe point for mouse
+      }}
+      onClick={(e) => {
+        // Only cancel default if we *actually* handled it on pointerdown.
+        if (!handledRef.current) return;
+        handledRef.current = false;
+        e.preventDefault();
+      }}
       onMouseEnter={() => {
         router.prefetch(String(props.href));
         const images = imageCache.get(String(props.href)) || [];
-        for (const image of images) {
-          prefetchImage(image);
-        }
-      }}
-      onMouseDown={(e) => {
-        const url = new URL(String(props.href), window.location.href);
-        if (
-          url.origin === window.location.origin &&
-          e.button === 0 &&
-          !e.altKey &&
-          !e.ctrlKey &&
-          !e.metaKey &&
-          !e.shiftKey
-        ) {
-          e.preventDefault();
-          router.push(String(props.href));
-        }
+        for (const image of images) prefetchImage(image);
       }}
       {...props}
     >

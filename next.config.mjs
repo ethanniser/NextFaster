@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  cacheComponents: true,
   experimental: {
-    ppr: true,
     inlineCss: true,
   },
   reactCompiler: true,
@@ -10,6 +10,7 @@ const nextConfig = {
   },
   images: {
     minimumCacheTTL: 31536000,
+    qualities: [65, 75, 80],
     remotePatterns: [
       {
         protocol: "https",

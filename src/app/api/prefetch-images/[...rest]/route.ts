@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseHTML } from "linkedom";
-
-export const dynamic = "force-static";
+import { cacheLife } from "next/cache";
 
 function getHostname() {
   if (process.env.NODE_ENV === "development") {
@@ -10,7 +9,32 @@ function getHostname() {
   if (process.env.VERCEL_ENV === "production") {
     return process.env.VERCEL_PROJECT_PRODUCTION_URL;
   }
-  return process.env.VERCEL_BRANCH_URL;
+  if (process.env.VERCEL_BRANCH_URL) {
+    return process.env.VERCEL_BRANCH_URL;
+  }
+  return "localhost:3000";
+}
+
+async function fetchAndProcessImages(url: string) {
+  "use cache";
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    return { error: true, status: response.status, images: null };
+  }
+  const body = await response.text();
+  const { document } = parseHTML(body);
+  const images = Array.from(document.querySelectorAll("main img"))
+    .map((img) => ({
+      srcset: img.getAttribute("srcset") || img.getAttribute("srcSet"), // Linkedom is case-sensitive
+      sizes: img.getAttribute("sizes"),
+      src: img.getAttribute("src"),
+      alt: img.getAttribute("alt"),
+      loading: img.getAttribute("loading"),
+    }))
+    .filter((img) => img.src);
+
+  return { error: false, status: 200, images };
 }
 
 export async function GET(
@@ -27,23 +51,15 @@ export async function GET(
     return new Response("Missing url parameter", { status: 400 });
   }
   const url = `${schema}://${host}/${href}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    return new Response("Failed to fetch", { status: response.status });
+
+  const result = await fetchAndProcessImages(url);
+
+  if (result.error) {
+    return new Response("Failed to fetch", { status: result.status });
   }
-  const body = await response.text();
-  const { document } = parseHTML(body);
-  const images = Array.from(document.querySelectorAll("main img"))
-    .map((img) => ({
-      srcset: img.getAttribute("srcset") || img.getAttribute("srcSet"), // Linkedom is case-sensitive
-      sizes: img.getAttribute("sizes"),
-      src: img.getAttribute("src"),
-      alt: img.getAttribute("alt"),
-      loading: img.getAttribute("loading"),
-    }))
-    .filter((img) => img.src);
+
   return NextResponse.json(
-    { images },
+    { images: result.images },
     {
       headers: {
         "Cache-Control": "public, max-age=3600",

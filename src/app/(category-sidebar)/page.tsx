@@ -1,9 +1,13 @@
 import { Link } from "@/components/ui/link";
 import { getCollections, getProductCount } from "@/lib/queries";
+import { cacheLife } from "next/cache";
 
 import Image from "next/image";
 
-export default async function Home() {
+async function CachedHomePage() {
+  "use cache";
+  cacheLife({ revalidate: 60 * 60 * 24 }); // 1 day
+
   const [collections, productCount] = await Promise.all([
     getCollections(),
     getProductCount(),
@@ -21,7 +25,6 @@ export default async function Home() {
           <div className="flex flex-row flex-wrap justify-center gap-2 border-b-2 py-4 sm:justify-start">
             {collection.categories.map((category) => (
               <Link
-                prefetch={true}
                 key={category.name}
                 className="flex w-[125px] flex-col items-center text-center"
                 href={`/products/${category.slug}`}
@@ -44,4 +47,8 @@ export default async function Home() {
       ))}
     </div>
   );
+}
+
+export default async function Home() {
+  return <CachedHomePage />;
 }

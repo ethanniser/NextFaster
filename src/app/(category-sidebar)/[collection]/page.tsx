@@ -2,6 +2,7 @@ import { Link } from "@/components/ui/link";
 import { db } from "@/db";
 import { collections } from "@/db/schema";
 import { getCollectionDetails } from "@/lib/queries";
+import { cacheLife } from "next/cache";
 
 import Image from "next/image";
 
@@ -9,13 +10,11 @@ export async function generateStaticParams() {
   return await db.select({ collection: collections.slug }).from(collections);
 }
 
-export default async function Home(props: {
-  params: Promise<{
-    collection: string;
-  }>;
-}) {
-  const collectionName = decodeURIComponent((await props.params).collection);
+async function CachedCollectionPage({ collection }: { collection: string }) {
+  "use cache";
+  cacheLife({ revalidate: 60 * 60 * 24 }); // 1 day
 
+  const collectionName = decodeURIComponent(collection);
   const collections = await getCollectionDetails(collectionName);
   let imageCount = 0;
 
@@ -27,7 +26,6 @@ export default async function Home(props: {
           <div className="flex flex-row flex-wrap justify-center gap-2 border-b-2 py-4 sm:justify-start">
             {collection.categories.map((category) => (
               <Link
-                prefetch={true}
                 key={category.name}
                 className="flex w-[125px] flex-col items-center text-center"
                 href={`/products/${category.slug}`}
@@ -50,4 +48,14 @@ export default async function Home(props: {
       ))}
     </div>
   );
+}
+
+export default async function Home(props: {
+  params: Promise<{
+    collection: string;
+  }>;
+}) {
+  const { collection } = await props.params;
+
+  return <CachedCollectionPage collection={collection} />;
 }

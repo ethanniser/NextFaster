@@ -15,6 +15,7 @@ export default async function Page(props: {
   }>;
 }) {
   const { category } = await props.params;
+
   const urlDecoded = decodeURIComponent(category);
   const cat = await getCategory(urlDecoded);
   if (!cat) {
@@ -42,7 +43,6 @@ export default async function Page(props: {
               {subcollection.subcategories.map(
                 (subcategory, subcategoryIndex) => (
                   <Link
-                    prefetch={true}
                     key={subcategoryIndex}
                     className="group flex h-full w-full flex-row gap-2 border px-4 py-2 hover:bg-gray-100 sm:w-[200px]"
                     href={`/products/${category}/${subcategory.slug}`}

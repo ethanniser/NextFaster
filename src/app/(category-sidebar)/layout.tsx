@@ -17,7 +17,6 @@ export default async function Layout({
           {allCollections.map((collection) => (
             <li key={collection.slug} className="w-full">
               <Link
-                prefetch={true}
                 href={`/${collection.slug}`}
                 className="block w-full py-1 text-xs text-gray-800 hover:bg-accent2 hover:underline"
               >

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__next-devtools__init",
+      "mcp__next-devtools__enable_cache_components",
+      "Bash(pnpm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

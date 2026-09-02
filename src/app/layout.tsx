@@ -12,6 +12,7 @@ import { WelcomeToast } from "./welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: {
@@ -20,9 +21,6 @@ export const metadata: Metadata = {
   },
   description: "A performant site built with Next.js",
 };
-
-export const revalidate = 86400; // One day
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -51,11 +49,7 @@ export default async function RootLayout({
                 </Suspense>
               </div>
               <div className="flex w-full flex-col items-start justify-center sm:w-auto sm:flex-row sm:items-center sm:gap-2">
-                <Link
-                  prefetch={true}
-                  href="/"
-                  className="text-4xl font-bold text-accent1"
-                >
+                <Link href="/" className="text-4xl font-bold text-accent1">
                   NextFaster
                 </Link>
                 <div className="items flex w-full flex-row items-center justify-between gap-4">
@@ -65,7 +59,6 @@ export default async function RootLayout({
                   <div className="flex flex-row justify-between space-x-4">
                     <div className="relative">
                       <Link
-                        prefetch={true}
                         href="/order"
                         className="text-lg text-accent1 hover:underline"
                       >
@@ -76,14 +69,12 @@ export default async function RootLayout({
                       </Suspense>
                     </div>
                     <Link
-                      prefetch={true}
                       href="/order-history"
                       className="hidden text-lg text-accent1 hover:underline md:block"
                     >
                       ORDER HISTORY
                     </Link>
                     <Link
-                      prefetch={true}
                       href="/order-history"
                       aria-label="Order History"
                       className="block text-lg text-accent1 hover:underline md:hidden"

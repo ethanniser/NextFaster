@@ -39,7 +39,6 @@ function CartItem({ product }: { product: CartItem }) {
   return (
     <div className="flex flex-row items-center justify-between border-t border-gray-200 pt-4">
       <Link
-        prefetch={true}
         href={`/products/${product.subcategory.subcollection.category_slug}/${product.subcategory.slug}/${product.slug}`}
       >
         <div className="flex flex-row space-x-2">
